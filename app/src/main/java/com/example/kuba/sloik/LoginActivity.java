@@ -50,7 +50,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "aa@aa.aa:aaaaa"
+            "janek@mail.com:janek",
+            "kuba@mail.com:kuba",
+            "jan@mail.com:jan",
+            "bartek@mail.com:bartek"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -198,7 +201,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() >= 3;
     }
 
     /**
@@ -321,6 +324,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
                     return pieces[1].equals(mPassword);
+                }
+                else {
+                    return false;
                 }
             }
 
