@@ -77,8 +77,6 @@ public class MainMap extends FragmentActivity implements OnMapReadyCallback, Goo
         dialog.setContentView(R.layout.product_info);
         dialog.setTitle("Informacje o słoiku");
         dialog.show();
-
-
         return false;
     }
 }
