@@ -14,9 +14,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainMap extends FragmentActivity implements OnMapReadyCallback {
+public class MainMap extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     FloatingActionButton fab;
@@ -60,10 +61,24 @@ public class MainMap extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        // Set a listener for marker click.
+        mMap.setOnMarkerClickListener(this);
+
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.product_info);
+        dialog.setTitle("Informacje o słoiku");
+        dialog.show();
+
+
+        return false;
+    }
 }
