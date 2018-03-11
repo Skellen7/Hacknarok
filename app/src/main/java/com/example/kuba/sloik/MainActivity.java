@@ -280,6 +280,9 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        CameraUpdateFactory.zoomTo(8.0f);
+
+
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
 
@@ -291,6 +294,7 @@ public class MainActivity extends AppCompatActivity
         mMap.addMarker(new MarkerOptions().position(m2).title("Słoik 2"));
         mMap.addMarker(new MarkerOptions().position(m3).title("Słoik 3"));
         mMap.addMarker(new MarkerOptions().position(m4).title("Słoik 4"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(m1, 12));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(m1));
 
 
