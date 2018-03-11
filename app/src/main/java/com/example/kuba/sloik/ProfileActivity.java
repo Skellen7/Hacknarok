@@ -76,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity
         if (id == R.id.nav_info) {
             startActivity(new Intent(ProfileActivity.this, MainActivity.class));
         } else if (id == R.id.nav_inventory) {
-            startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+            startActivity(new Intent(ProfileActivity.this, Inventory.class));
 
         } else if (id == R.id.nav_list) {
             startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));

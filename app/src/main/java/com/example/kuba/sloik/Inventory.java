@@ -24,14 +24,6 @@ public class Inventory extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -82,9 +74,9 @@ public class Inventory extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_info) {
-            startActivity(new Intent(Inventory.this, MainActivity.class));
+            startActivity(new Intent(Inventory.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
-            startActivity(new Intent(Inventory.this, Inventory.class));
+            startActivity(new Intent(Inventory.this, MainActivity.class));
 
         } else if (id == R.id.nav_list) {
             startActivity(new Intent(Inventory.this, ProfileActivity.class));
