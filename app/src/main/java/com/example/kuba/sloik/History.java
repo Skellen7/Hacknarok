@@ -14,16 +14,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class ProfileActivity extends AppCompatActivity
+public class History extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_history);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -74,21 +82,21 @@ public class ProfileActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_info) {
-            startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+            startActivity(new Intent(History.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
-            startActivity(new Intent(ProfileActivity.this, Inventory.class));
+            startActivity(new Intent(History.this, Inventory.class));
 
         } else if (id == R.id.nav_list) {
-            startActivity(new Intent(ProfileActivity.this, JarList.class));
+            startActivity(new Intent(History.this, JarList.class));
 
         } else if (id == R.id.nav_history) {
-            startActivity(new Intent(ProfileActivity.this, History.class));
+            startActivity(new Intent(History.this, MainActivity.class));
 
         } else if (id == R.id.nav_share) {
-            startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+            startActivity(new Intent(History.this, ProfileActivity.class));
 
         } else if (id == R.id.nav_send) {
-            startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+            startActivity(new Intent(History.this, ProfileActivity.class));
 
         }
 

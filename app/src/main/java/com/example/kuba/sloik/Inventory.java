@@ -79,10 +79,10 @@ public class Inventory extends AppCompatActivity
             startActivity(new Intent(Inventory.this, MainActivity.class));
 
         } else if (id == R.id.nav_list) {
-            startActivity(new Intent(Inventory.this, ProfileActivity.class));
+            startActivity(new Intent(Inventory.this, JarList.class));
 
         } else if (id == R.id.nav_history) {
-            startActivity(new Intent(Inventory.this, ProfileActivity.class));
+            startActivity(new Intent(Inventory.this, History.class));
 
         } else if (id == R.id.nav_share) {
             startActivity(new Intent(Inventory.this, ProfileActivity.class));

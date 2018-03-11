@@ -24,4 +24,6 @@
     </string>
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_inventory">Inventory</string>
+    <string name="title_activity_jar_list">JarList</string>
+    <string name="title_activity_history">History</string>
 </resources>

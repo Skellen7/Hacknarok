@@ -181,10 +181,10 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, Inventory.class));
 
         } else if (id == R.id.nav_list) {
-            startActivity(new Intent(MainActivity.this, MainActivity.class));
+            startActivity(new Intent(MainActivity.this, JarList.class));
 
         } else if (id == R.id.nav_history) {
-            startActivity(new Intent(MainActivity.this, MainActivity.class));
+            startActivity(new Intent(MainActivity.this, History.class));
 
         } else if (id == R.id.nav_share) {
             startActivity(new Intent(MainActivity.this, MainActivity.class));
