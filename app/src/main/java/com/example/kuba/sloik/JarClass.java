@@ -13,14 +13,68 @@ public class JarClass {
     public String longitude;
 
     public JarClass(){
-        this("null","null","null","null","-10","-10");
+        this.size = "5";
+        this.name = "not_working";
+        this.description = "neither";
+        this.date = "03.26";
+        this.latitude="10";
+        this.longitude="20";
     }
+
     public JarClass(String size, String name, String description, String date, String latitude, String longitude){
         this.size = size;
         this.name = name;
         this.description = description;
         this.date = date;
         this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 }

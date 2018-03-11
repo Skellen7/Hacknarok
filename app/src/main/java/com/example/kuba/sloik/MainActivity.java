@@ -24,11 +24,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -44,8 +46,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
@@ -55,8 +60,10 @@ public class MainActivity extends AppCompatActivity
     private GoogleMap mMap;
     FloatingActionButton fab;
 
-    private DatabaseReference mDatabase;
-        private DatabaseReference mRef;
+    DatabaseReference mDatabese;
+
+    List<JarClass> jarList;
+
 
 
     final Context context = this;
@@ -68,10 +75,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//DUPA
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mRef = mDatabase;
-
+        mDatabese = FirebaseDatabase.getInstance().getReference("jars");
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -99,6 +103,7 @@ public class MainActivity extends AppCompatActivity
                 dialog.setTitle("Title...");
                 dialog.show();
 
+
                 Button returnButton = (Button) dialog.findViewById(R.id.returnButton);
                 returnButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -122,15 +127,48 @@ public class MainActivity extends AppCompatActivity
                         String latitude = "test";
                         String longitude = "test";
 
+                        // Creating new user node, which returns the unique key value
+                        // new user node would be /users/$userid/
+                        String jarId = mDatabese.push().getKey();
+
                         JarClass jar = new JarClass(size,name,description,date,latitude,longitude);
-                        mDatabase.child("jars").child(getId()).setValue(jar);
+
+                        mDatabese.child(jarId).setValue(jar);
+
+                        Toast.makeText(context, "Słoik " + name + " dodany", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+
+
                     }
                 });
+
             }
         });
-
+        jarList = new ArrayList<>();
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+            mDatabese.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
+                        JarClass jar = jarSnapshot.getValue(JarClass.class);
+                        Log.v("TEST", jar.getName());
+                        jarList.add(jar);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.v("TEST","wrong");
+                }
+            });
+        }
 
     private String getId() {
         uID += 1;
@@ -245,7 +283,15 @@ public class MainActivity extends AppCompatActivity
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
 
-        // Add a marker in Sydney and move the camera
+        LatLng m1 = new LatLng(50.021842, 19.887334);
+        LatLng m2 = new LatLng(50.019360, 19.881583);
+        LatLng m3 = new LatLng(50.016795, 19.879395);
+        LatLng m4 = new LatLng(50.018725, 19.885661);
+        mMap.addMarker(new MarkerOptions().position(m1).title("Słoik 1"));
+        mMap.addMarker(new MarkerOptions().position(m2).title("Słoik 2"));
+        mMap.addMarker(new MarkerOptions().position(m3).title("Słoik 3"));
+        mMap.addMarker(new MarkerOptions().position(m4).title("Słoik 4"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(m1));
 
 
         ValueEventListener postListener = new ValueEventListener() {
@@ -265,10 +311,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         };
-        mRef.child("").addValueEventListener(postListener);
-
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(0,0)));
     }
 
 
