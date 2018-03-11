@@ -28,6 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:backgroundTint="@android:color/holo_orange_light"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_jar_of_jam_big"
+        tools:layout_editor_absoluteX="301dp"
+        tools:layout_editor_absoluteY="483dp" />
 
 </android.support.design.widget.CoordinatorLayout>
