@@ -1,33 +1,5 @@
 package com.example.kuba.sloik;
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.Layout;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
-
-import java.util.List;
-
-/**
- * Created by Kuba on 11.03.2018.
- */
-
-public class JarList extends ArrayAdapter<JarClass> {
-    private Activity context;
-    private List<JarClass> jarList;
-
-    public JarList(Activity context, List<JarClass> jarList){
-        super(context, R.layout.activity_main, jarList);
-        this.context = context;
-        this.jarList = jarList;
-    }
-
-   
-=======
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -42,24 +14,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class JarList extends AppCompatActivity
+public class Inventory extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_jar_list);
+        setContentView(R.layout.activity_inventory);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -110,21 +74,21 @@ public class JarList extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_info) {
-            startActivity(new Intent(JarList.this, ProfileActivity.class));
+            startActivity(new Intent(Inventory.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
-            startActivity(new Intent(JarList.this, Inventory.class));
+            startActivity(new Intent(Inventory.this, MainActivity.class));
 
         } else if (id == R.id.nav_list) {
-            startActivity(new Intent(JarList.this, MainActivity.class));
+            startActivity(new Intent(Inventory.this, JarList.class));
 
         } else if (id == R.id.nav_history) {
-            startActivity(new Intent(JarList.this, History.class));
+            startActivity(new Intent(Inventory.this, History.class));
 
         } else if (id == R.id.nav_share) {
-            startActivity(new Intent(JarList.this, ProfileActivity.class));
+            startActivity(new Intent(Inventory.this, ProfileActivity.class));
 
         } else if (id == R.id.nav_send) {
-            startActivity(new Intent(JarList.this, ProfileActivity.class));
+            startActivity(new Intent(Inventory.this, ProfileActivity.class));
 
         }
 
