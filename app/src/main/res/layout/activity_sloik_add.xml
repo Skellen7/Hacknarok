@@ -15,13 +15,14 @@
         android:text="Rozmiar"/>
 
     <RadioGroup
+        android:id="@+id/radioGroup"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="16dp">
         <RadioButton
-            android:id="@+id/radioButton1"
+            android:id="@+id/smallJarButton"
             android:drawableTop="@drawable/ic_jar_of_jam_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +30,7 @@
             android:drawableBottom="?android:attr/listChoiceIndicatorSingle"
             android:padding="14dp"/>
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/mediumJarButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_jar_of_jam_medium"
@@ -40,7 +41,7 @@
             android:padding="14dp"/>/>
 
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/bigJarButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_jar_of_jam_big"
@@ -57,7 +58,7 @@
         android:text="Nazwa"/>
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/jarName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -71,7 +72,7 @@
         android:text="Opis" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/jarDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -84,6 +85,7 @@
         android:text="Data waznosci" />
 
     <EditText
+        android:id="@+id/jarDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -94,11 +96,13 @@
         android:layout_height="wrap_content"
         android:gravity="center">
         <Button
+            android:id="@+id/returnButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="ANULUJ"/>
 
         <Button
+            android:id="@+id/addButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="DODAJ"/>
