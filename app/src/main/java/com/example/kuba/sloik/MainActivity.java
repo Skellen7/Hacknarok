@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +26,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -197,9 +202,39 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onMarkerClick(Marker marker) {
         final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.product_info);
-        dialog.setTitle("Informacje o słoiku");
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ImageView big_jar = dialog.findViewById(R.id.jar_big_icon);
+        ImageView medium_jar = dialog.findViewById(R.id.jar_medium_icon);
+        ImageView small_jar = dialog.findViewById(R.id.jar_small_icon);
+
+        ImageView jar_img = dialog.findViewById(R.id.mainJar);
+        TextView title = dialog.findViewById(R.id.jarTitle);
+        TextView description = dialog.findViewById(R.id.description);
+        TextView date = dialog.findViewById(R.id.jar_date);
+
+        //if(jar.size=="small") small_jar.setImageResource(R.drawable.ic_jar_of_jam_small);
+        //else if(jar.size=="medium") medium_jar.setImageResource(R.drawable.ic_jar_of_jam_medium);
+        //else big_jar.setImageResource(R.drawable.ic_jar_of_jam_big);
+
+        //jar_img.setImageBitmap(jar.img);
+        //title.setText(jar.title);
+        //description.setText(jar.description);
+        //date.setText(jar.date);
+
+        Button back = (Button)dialog.findViewById(R.id.product_back);
+
         dialog.show();
+
+        back.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                dialog.dismiss();
+            }
+        });
+
         return false;
     }
 
