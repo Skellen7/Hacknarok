@@ -22,8 +22,8 @@ Users have their own accounts and collect points for good exchanges and tasty me
 
 ## Authors
 
-* **Jakub Cholewa** [PurpleBooth](https://github.com/Skellen7)
-* **Bartosz Gaj** [PurpleBooth](https://github.com/balipl)
+* **Jakub Cholewa** [@Skellen7](https://github.com/Skellen7)
+* **Bartosz Gaj** [@balipl](https://github.com/balipl)
 * **Jan Ignatowicz**
 * **Jan Rodzoń**
 
