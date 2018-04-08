@@ -84,6 +84,12 @@
         android:layout_height="wrap_content"
         android:text="Data waznosci" />
 
+    <Button
+        android:id="@+id/selectPlaceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="Wybierz lokalizacje"/>
+
     <EditText
         android:id="@+id/jarDate"
         android:layout_width="match_parent"
