@@ -141,10 +141,11 @@ public class MainActivity extends AppCompatActivity
 
                         DatePickerDialog datePickerDialog = new DatePickerDialog(
                                 MainActivity.this,
+                                R.style.MyDatePickerDialogTheme,
                                 mDateSetListener,
                                 year, month, day);
-                        datePickerDialog.show();
 
+                        datePickerDialog.show();
                     }
                 });
 
@@ -156,8 +157,7 @@ public class MainActivity extends AppCompatActivity
                         c.set(Calendar.MONTH, month);
                         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                        String date = DateFormat.getDateInstance().format(c.getTime());
-                        Log.v("DateTest", date);
+                        String date = DateFormat.getDateInstance(DateFormat.DEFAULT).format(c.getTime());
                         mDateDisplayButton.setText(date);
                     }
                 };
