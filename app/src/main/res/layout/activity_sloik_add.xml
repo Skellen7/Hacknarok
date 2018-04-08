@@ -85,17 +85,21 @@
         android:text="Data waznosci" />
 
     <Button
+        android:id="@+id/jarDateButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Wybierz datę"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lokalizacja" />
+
+    <Button
         android:id="@+id/selectPlaceButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:text="Wybierz lokalizacje"/>
-
-    <EditText
-        android:id="@+id/jarDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="date" />
 
     <LinearLayout
         android:layout_width="match_parent"

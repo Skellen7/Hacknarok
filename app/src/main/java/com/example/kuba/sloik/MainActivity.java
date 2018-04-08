@@ -1,5 +1,6 @@
 package com.example.kuba.sloik;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -29,8 +31,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,7 +45,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity
 
     List<JarClass> jarList;
 
+    //for choosing date while adding new jar
+    private Button mDateDisplayButton;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
 
     final Context context = this;
@@ -125,6 +130,38 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
 
+                mDateDisplayButton = (Button) dialog.findViewById(R.id.jarDateButton);
+                mDateDisplayButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Calendar c = Calendar.getInstance();
+                        int year = c.get(Calendar.YEAR);
+                        int month = c.get(Calendar.MONTH);
+                        int day = c.get(Calendar.DAY_OF_MONTH);
+
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                                MainActivity.this,
+                                mDateSetListener,
+                                year, month, day);
+                        datePickerDialog.show();
+
+                    }
+                });
+
+                mDateSetListener = new DatePickerDialog.OnDateSetListener(){
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        Calendar c = Calendar.getInstance();
+                        c.set(Calendar.YEAR, year);
+                        c.set(Calendar.MONTH, month);
+                        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                        String date = DateFormat.getDateInstance().format(c.getTime());
+                        Log.v("DateTest", date);
+                        mDateDisplayButton.setText(date);
+                    }
+                };
+
                 Button returnButton = (Button) dialog.findViewById(R.id.returnButton);
                 returnButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -146,7 +183,7 @@ public class MainActivity extends AppCompatActivity
                         String size = Integer.toString(selectedId);
                         String name = ((EditText)(dialog.findViewById(R.id.jarName))).getText().toString();
                         String description = ((EditText)(dialog.findViewById(R.id.jarDescription))).getText().toString();
-                        String date = ((EditText)(dialog.findViewById(R.id.jarDate))).getText().toString();
+                        String date = ((Button)(dialog.findViewById(R.id.jarDateButton))).getText().toString();
                         String latitude = String.valueOf(Wrapper.place.getLatLng().latitude);
                         String longitude = String.valueOf(Wrapper.place.getLatLng().longitude);
 
@@ -160,7 +197,6 @@ public class MainActivity extends AppCompatActivity
 
                         Toast.makeText(context, "Słoik " + name + " dodany", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
-
 
                     }
                 });
@@ -176,6 +212,7 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 Wrapper.place = PlacePicker.getPlace(data, this);
 
+                //unnecessary toast giving some information
                 String toastMsg = String.format("Place: %s", Wrapper.place.getName());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
@@ -357,6 +394,5 @@ public class MainActivity extends AppCompatActivity
         dialog.findViewById(R.id.mediumJarButton).setId(RB_2);
         dialog.findViewById(R.id.bigJarButton).setId(RB_3);
     }
-
 
 }
