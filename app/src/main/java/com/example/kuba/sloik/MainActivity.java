@@ -36,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -395,7 +396,8 @@ public class MainActivity extends AppCompatActivity
                 for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
                     JarClass jar = jarSnapshot.getValue(JarClass.class);
                     LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
-                    mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName()));
+                    mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
                     jarList.add(jar);
                 }
             }
