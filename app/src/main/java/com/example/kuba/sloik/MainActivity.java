@@ -86,6 +86,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        jarList = new ArrayList<>();
+
+        mDatabese = FirebaseDatabase.getInstance().getReference("jars");
+
         super.onCreate(savedInstanceState);
 
         userID = getIntent().getStringExtra("USER_ID");
@@ -212,7 +216,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        jarList = new ArrayList<>();
         userList = new ArrayList<>();
 
 
@@ -243,20 +246,6 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        mDatabese.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot jarSnapshot : dataSnapshot.getChildren()) {
-                    JarClass jar = jarSnapshot.getValue(JarClass.class);
-                    jarList.add(jar);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -286,7 +275,6 @@ public class MainActivity extends AppCompatActivity
         userName = (TextView) headerView.findViewById(R.id.current_user);
         userName.setText(userClassId.getUsername());
     }
-
 
     @Override
     public void onBackPressed() {
@@ -379,9 +367,9 @@ public class MainActivity extends AppCompatActivity
 
         dialog.show();
 
-        back.setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View v) {
+            public void onClick(View v){
                 dialog.dismiss();
             }
         });
@@ -392,35 +380,38 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         CameraUpdateFactory.zoomTo(8.0f);
 
 
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
 
-        LatLng m1 = new LatLng(50.021842, 19.887334);
-        LatLng m2 = new LatLng(50.019360, 19.881583);
-        LatLng m3 = new LatLng(50.016795, 19.879395);
-        LatLng m4 = new LatLng(50.018725, 19.885661);
-        mMap.addMarker(new MarkerOptions().position(m1).title("Słoik 1"));
-        mMap.addMarker(new MarkerOptions().position(m2).title("Słoik 2"));
-        mMap.addMarker(new MarkerOptions().position(m3).title("Słoik 3"));
-        mMap.addMarker(new MarkerOptions().position(m4).title("Słoik 4"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(m1, 12));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(m1));
 
 
+        mDatabese.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
+                    JarClass jar = jarSnapshot.getValue(JarClass.class);
+                    LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
+                    mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName()));
+                    jarList.add(jar);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.v("TEST","wrong");
+            }
+        });
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                  //Get Post object and use the values to update the UI
                 JarClass jar = dataSnapshot.getValue(JarClass.class);
-                Log.v("TEST",jar.description);
                 LatLng jarPosition = new LatLng(Integer.valueOf(jar.latitude), 15);
 
-                mMap.addMarker(new MarkerOptions().position(jarPosition).title(jar.name));
-                // ...
             }
 
             @Override
@@ -435,5 +426,6 @@ public class MainActivity extends AppCompatActivity
         dialog.findViewById(R.id.mediumJarButton).setId(RB_2);
         dialog.findViewById(R.id.bigJarButton).setId(RB_3);
     }
+
 
 }

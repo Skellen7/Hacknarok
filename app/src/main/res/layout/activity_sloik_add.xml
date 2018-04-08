@@ -38,7 +38,7 @@
             tools:layout_editor_absoluteY="49dp"
             android:button="@null"
             android:drawableBottom="?android:attr/listChoiceIndicatorSingle"
-            android:padding="14dp"/>/>
+            android:padding="14dp"/>
 
         <RadioButton
             android:id="@+id/bigJarButton"
