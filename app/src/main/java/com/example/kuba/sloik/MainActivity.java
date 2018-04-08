@@ -1,5 +1,6 @@
 package com.example.kuba.sloik;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -29,8 +31,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,7 +45,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -57,14 +59,23 @@ public class MainActivity extends AppCompatActivity
     private final int PLACE_PICKER_REQUEST = 1;
     FloatingActionButton fab;
 
+    private DatabaseReference mDatabese;
+    private DatabaseReference mDatabase;
     private final int RB_1 = 1001;
     private final int RB_2 = 1002;
     private final int RB_3 = 1003;
 
-    DatabaseReference mDatabese;
+    private List<JarClass> jarList;
+    private ArrayList<UserClass> userList;
 
-    List<JarClass> jarList;
+    private String userID;
+    private UserClass userClassId;
 
+    private TextView userName;
+    private TextView userEmail;
+    //for choosing date while adding new jar
+    private Button mDateDisplayButton;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
 
     final Context context = this;
@@ -80,6 +91,11 @@ public class MainActivity extends AppCompatActivity
         mDatabese = FirebaseDatabase.getInstance().getReference("jars");
 
         super.onCreate(savedInstanceState);
+
+        userID = getIntent().getStringExtra("USER_ID");
+
+        mDatabese = FirebaseDatabase.getInstance().getReference("jars");
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
 
 
 
@@ -128,6 +144,38 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
 
+                mDateDisplayButton = (Button) dialog.findViewById(R.id.jarDateButton);
+                mDateDisplayButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Calendar c = Calendar.getInstance();
+                        int year = c.get(Calendar.YEAR);
+                        int month = c.get(Calendar.MONTH);
+                        int day = c.get(Calendar.DAY_OF_MONTH);
+
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                                MainActivity.this,
+                                R.style.MyDatePickerDialogTheme,
+                                mDateSetListener,
+                                year, month, day);
+
+                        datePickerDialog.show();
+                    }
+                });
+
+                mDateSetListener = new DatePickerDialog.OnDateSetListener(){
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        Calendar c = Calendar.getInstance();
+                        c.set(Calendar.YEAR, year);
+                        c.set(Calendar.MONTH, month);
+                        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                        String date = DateFormat.getDateInstance(DateFormat.DEFAULT).format(c.getTime());
+                        mDateDisplayButton.setText(date);
+                    }
+                };
+
                 Button returnButton = (Button) dialog.findViewById(R.id.returnButton);
                 returnButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -144,12 +192,10 @@ public class MainActivity extends AppCompatActivity
                         int selectedId = radioGroup.getCheckedRadioButtonId();
                         RadioButton radioButton = (RadioButton) findViewById(selectedId);
 
-                        Log.v("RBTEST", Integer.toString(selectedId));
-
                         String size = Integer.toString(selectedId);
                         String name = ((EditText)(dialog.findViewById(R.id.jarName))).getText().toString();
                         String description = ((EditText)(dialog.findViewById(R.id.jarDescription))).getText().toString();
-                        String date = ((EditText)(dialog.findViewById(R.id.jarDate))).getText().toString();
+                        String date = ((Button)(dialog.findViewById(R.id.jarDateButton))).getText().toString();
                         String latitude = String.valueOf(Wrapper.place.getLatLng().latitude);
                         String longitude = String.valueOf(Wrapper.place.getLatLng().longitude);
 
@@ -170,8 +216,18 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+        userList = new ArrayList<>();
 
 
+    }
+
+    private UserClass getUser() {
+        for (UserClass user : userList) {
+            if (user.getEmail().toString().equals(userID)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -179,6 +235,7 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 Wrapper.place = PlacePicker.getPlace(data, this);
 
+                //unnecessary toast giving some information
                 String toastMsg = String.format("Place: %s", Wrapper.place.getName());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
@@ -188,28 +245,35 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-//            mDatabese.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                    for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
-//                        JarClass jar = jarSnapshot.getValue(JarClass.class);
-//                        Log.v("TEST", jar.getName());
-//                        jarList.add(jar);
-//                        jarId++;
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//                    Log.v("TEST","wrong");
-//                }
-//            });
-        }
 
-    private String getId() {
-        jarId += 1;
-        return Integer.toString(jarId);
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    UserClass user= userSnapshot.getValue(UserClass.class);
+                    if (user.getEmail().toString().equals(userID)) {
+
+                        userClassId = user;
+                    afterDB();}
+                    userList.add(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+    }
+
+    private void afterDB() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        userEmail = (TextView) headerView.findViewById(R.id.current_user_email);
+        userEmail.setText(userID);
+        userName = (TextView) headerView.findViewById(R.id.current_user);
+        userName.setText(userClassId.getUsername());
     }
 
     @Override
@@ -299,7 +363,7 @@ public class MainActivity extends AppCompatActivity
         //description.setText(jar.description);
         //date.setText(jar.date);
 
-        Button back = (Button)dialog.findViewById(R.id.product_back);
+        Button back = (Button) dialog.findViewById(R.id.product_back);
 
         dialog.show();
 
@@ -322,25 +386,7 @@ public class MainActivity extends AppCompatActivity
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
 
-//        Log.v("PRZED", " MAPA");
-//        for(JarClass jar : jarList){
-//            Log.v("ITERACJA", "iteruje");
-//            LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
-//            mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName()));
-//        }
-/*
-        LatLng m1 = new LatLng(50.021842, 19.887334);
-        LatLng m2 = new LatLng(50.019360, 19.881583);
-        LatLng m3 = new LatLng(50.016795, 19.879395);
-        LatLng m4 = new LatLng(50.018725, 19.885661);
-        mMap.addMarker(new MarkerOptions().position(m1).title("Słoik 1"));
-        mMap.addMarker(new MarkerOptions().position(m2).title("Słoik 2"));
-        mMap.addMarker(new MarkerOptions().position(m3).title("Słoik 3"));
-        mMap.addMarker(new MarkerOptions().position(m4).title("Słoik 4"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(m1, 12));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(m1));
 
-*/
 
         mDatabese.addValueEventListener(new ValueEventListener() {
             @Override
@@ -359,13 +405,11 @@ public class MainActivity extends AppCompatActivity
                 Log.v("TEST","wrong");
             }
         });
-
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                  //Get Post object and use the values to update the UI
                 JarClass jar = dataSnapshot.getValue(JarClass.class);
-                Log.v("MNIEJ",jar.description);
                 LatLng jarPosition = new LatLng(Integer.valueOf(jar.latitude), 15);
 
             }
