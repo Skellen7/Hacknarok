@@ -2,16 +2,11 @@ package com.example.kuba.sloik;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.view.Window;
@@ -45,17 +39,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -77,7 +68,8 @@ public class MainActivity extends AppCompatActivity
 
 
     final Context context = this;
-    private int uID = 0;
+    private int jarId = 0;
+    private int session_id = 1;
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -160,9 +152,11 @@ public class MainActivity extends AppCompatActivity
 
                         // Creating new user node, which returns the unique key value
                         // new user node would be /users/$userid/
-                        String jarId = mDatabese.push().getKey();
+                        //String jarId = mDatabese.push().getKey();
 
-                        JarClass jar = new JarClass(size,name,description,date,latitude,longitude);
+                        String jarId = new Integer(MainActivity.this.jarId).toString();
+
+                        JarClass jar = new JarClass(String.valueOf(jarId), size,name,description,date,latitude,longitude);
 
                         mDatabese.child(jarId).setValue(jar);
 
@@ -200,6 +194,7 @@ public class MainActivity extends AppCompatActivity
                         JarClass jar = jarSnapshot.getValue(JarClass.class);
                         Log.v("TEST", jar.getName());
                         jarList.add(jar);
+                        jarId++;
                     }
 
                 }
@@ -212,8 +207,8 @@ public class MainActivity extends AppCompatActivity
         }
 
     private String getId() {
-        uID += 1;
-        return Integer.toString(uID);
+        jarId += 1;
+        return Integer.toString(jarId);
     }
 
     @Override
