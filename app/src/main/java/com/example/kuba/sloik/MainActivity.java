@@ -147,14 +147,12 @@ public class MainActivity extends AppCompatActivity
                         String name = ((EditText)(dialog.findViewById(R.id.jarName))).getText().toString();
                         String description = ((EditText)(dialog.findViewById(R.id.jarDescription))).getText().toString();
                         String date = ((EditText)(dialog.findViewById(R.id.jarDate))).getText().toString();
-                        String latitude = "test";
-                        String longitude = "test";
+                        String latitude = String.valueOf(Wrapper.place.getLatLng().latitude);
+                        String longitude = String.valueOf(Wrapper.place.getLatLng().longitude);
 
                         // Creating new user node, which returns the unique key value
                         // new user node would be /users/$userid/
-                        //String jarId = mDatabese.push().getKey();
-
-                        String jarId = new Integer(MainActivity.this.jarId).toString();
+                        String jarId = mDatabese.push().getKey();
 
                         JarClass jar = new JarClass(String.valueOf(jarId), size,name,description,date,latitude,longitude);
 
@@ -176,8 +174,9 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, this);
-                String toastMsg = String.format("Place: %s", place.getName());
+                Wrapper.place = PlacePicker.getPlace(data, this);
+
+                String toastMsg = String.format("Place: %s", Wrapper.place.getName());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
         }
