@@ -5,6 +5,7 @@ package com.example.kuba.sloik;
  */
 
 public class JarClass {
+    private String ownerId;
     public String size;
     public String name;
     public String description;
@@ -21,7 +22,8 @@ public class JarClass {
         this.longitude="20";
     }
 
-    public JarClass(String size, String name, String description, String date, String latitude, String longitude){
+    public JarClass(String ownerId, String size, String name, String description, String date, String latitude, String longitude){
+        this.ownerId = ownerId;
         this.size = size;
         this.name = name;
         this.description = description;

@@ -1,17 +1,13 @@
 package com.example.kuba.sloik;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,8 +19,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.view.Window;
@@ -32,8 +28,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,27 +39,33 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
-    private FloatingActionButton fab;
+    private Button placePickerButton;
+    private final int PLACE_PICKER_REQUEST = 1;
+    FloatingActionButton fab;
 
     private DatabaseReference mDatabese;
     private DatabaseReference mDatabase;
+    private final int RB_1 = 1001;
+    private final int RB_2 = 1002;
+    private final int RB_3 = 1003;
+
+    DatabaseReference mDatabese;
 
     private List<JarClass> jarList;
     private ArrayList<UserClass> userList;
@@ -71,10 +75,14 @@ public class MainActivity extends AppCompatActivity
 
     private TextView userName;
     private TextView userEmail;
+    //for choosing date while adding new jar
+    private Button mDateDisplayButton;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
 
     final Context context = this;
-    private int uID = 0;
+    private int jarId = 0;
+    private int session_id = 1;
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -86,6 +94,7 @@ public class MainActivity extends AppCompatActivity
 
         mDatabese = FirebaseDatabase.getInstance().getReference("jars");
         mDatabase = FirebaseDatabase.getInstance().getReference("users");
+
 
 
         setContentView(R.layout.activity_main);
@@ -114,6 +123,56 @@ public class MainActivity extends AppCompatActivity
                 dialog.setTitle("Title...");
                 dialog.show();
 
+                setJarButtonIds(dialog);
+
+                placePickerButton = (Button) dialog.findViewById(R.id.selectPlaceButton);
+                placePickerButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+                    try {
+                        startActivityForResult(builder.build(MainActivity.this), PLACE_PICKER_REQUEST);
+                    } catch (GooglePlayServicesRepairableException e) {
+                        e.printStackTrace();
+                    } catch (GooglePlayServicesNotAvailableException e) {
+                        e.printStackTrace();
+                    }
+                    }
+                });
+
+                mDateDisplayButton = (Button) dialog.findViewById(R.id.jarDateButton);
+                mDateDisplayButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Calendar c = Calendar.getInstance();
+                        int year = c.get(Calendar.YEAR);
+                        int month = c.get(Calendar.MONTH);
+                        int day = c.get(Calendar.DAY_OF_MONTH);
+
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                                MainActivity.this,
+                                R.style.MyDatePickerDialogTheme,
+                                mDateSetListener,
+                                year, month, day);
+
+                        datePickerDialog.show();
+                    }
+                });
+
+                mDateSetListener = new DatePickerDialog.OnDateSetListener(){
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        Calendar c = Calendar.getInstance();
+                        c.set(Calendar.YEAR, year);
+                        c.set(Calendar.MONTH, month);
+                        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                        String date = DateFormat.getDateInstance(DateFormat.DEFAULT).format(c.getTime());
+                        mDateDisplayButton.setText(date);
+                    }
+                };
 
                 Button returnButton = (Button) dialog.findViewById(R.id.returnButton);
                 returnButton.setOnClickListener(new View.OnClickListener() {
@@ -132,17 +191,17 @@ public class MainActivity extends AppCompatActivity
                         RadioButton radioButton = (RadioButton) findViewById(selectedId);
 
                         String size = Integer.toString(selectedId);
-                        String name = ((EditText) (dialog.findViewById(R.id.jarName))).getText().toString();
-                        String description = ((EditText) (dialog.findViewById(R.id.jarDescription))).getText().toString();
-                        String date = ((EditText) (dialog.findViewById(R.id.jarDate))).getText().toString();
-                        String latitude = "test";
-                        String longitude = "test";
+                        String name = ((EditText)(dialog.findViewById(R.id.jarName))).getText().toString();
+                        String description = ((EditText)(dialog.findViewById(R.id.jarDescription))).getText().toString();
+                        String date = ((Button)(dialog.findViewById(R.id.jarDateButton))).getText().toString();
+                        String latitude = String.valueOf(Wrapper.place.getLatLng().latitude);
+                        String longitude = String.valueOf(Wrapper.place.getLatLng().longitude);
 
                         // Creating new user node, which returns the unique key value
                         // new user node would be /users/$userid/
                         String jarId = mDatabese.push().getKey();
 
-                        JarClass jar = new JarClass(size, name, description, date, latitude, longitude);
+                        JarClass jar = new JarClass(String.valueOf(jarId), size,name,description,date,latitude,longitude);
 
                         mDatabese.child(jarId).setValue(jar);
 
@@ -168,6 +227,18 @@ public class MainActivity extends AppCompatActivity
             }
         }
         return null;
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Wrapper.place = PlacePicker.getPlace(data, this);
+
+                //unnecessary toast giving some information
+                String toastMsg = String.format("Place: %s", Wrapper.place.getName());
+                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override
@@ -218,11 +289,6 @@ public class MainActivity extends AppCompatActivity
         userName.setText(userClassId.getUsername());
     }
 
-
-    private String getId() {
-        uID += 1;
-        return Integer.toString(uID);
-    }
 
     @Override
     public void onBackPressed() {
@@ -346,5 +412,30 @@ public class MainActivity extends AppCompatActivity
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(m1, 12));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(m1));
 
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                 //Get Post object and use the values to update the UI
+                JarClass jar = dataSnapshot.getValue(JarClass.class);
+                Log.v("TEST",jar.description);
+                LatLng jarPosition = new LatLng(Integer.valueOf(jar.latitude), 15);
+
+                mMap.addMarker(new MarkerOptions().position(jarPosition).title(jar.name));
+                // ...
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
+
+    void setJarButtonIds(Dialog dialog){
+        dialog.findViewById(R.id.smallJarButton).setId(RB_1);
+        dialog.findViewById(R.id.mediumJarButton).setId(RB_2);
+        dialog.findViewById(R.id.bigJarButton).setId(RB_3);
+    }
+
 }
