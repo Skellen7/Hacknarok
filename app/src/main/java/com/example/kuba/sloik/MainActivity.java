@@ -66,6 +66,10 @@ public class MainActivity extends AppCompatActivity
     private final int PLACE_PICKER_REQUEST = 1;
     FloatingActionButton fab;
 
+    private final int RB_1 = 1001;
+    private final int RB_2 = 1002;
+    private final int RB_3 = 1003;
+
     DatabaseReference mDatabese;
 
     List<JarClass> jarList;
@@ -82,6 +86,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         mDatabese = FirebaseDatabase.getInstance().getReference("jars");
+
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -108,6 +113,8 @@ public class MainActivity extends AppCompatActivity
                 dialog.setContentView(R.layout.activity_sloik_add);
                 dialog.setTitle("Title...");
                 dialog.show();
+
+                setJarButtonIds(dialog);
 
                 placePickerButton = (Button) dialog.findViewById(R.id.selectPlaceButton);
                 placePickerButton.setOnClickListener(new View.OnClickListener() {
@@ -141,6 +148,8 @@ public class MainActivity extends AppCompatActivity
                         RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radioGroup);
                         int selectedId = radioGroup.getCheckedRadioButtonId();
                         RadioButton radioButton = (RadioButton) findViewById(selectedId);
+
+                        Log.v("RBTEST", Integer.toString(selectedId));
 
                         String size = Integer.toString(selectedId);
                         String name = ((EditText)(dialog.findViewById(R.id.jarName))).getText().toString();
@@ -349,6 +358,11 @@ public class MainActivity extends AppCompatActivity
         };
     }
 
+    void setJarButtonIds(Dialog dialog){
+        dialog.findViewById(R.id.smallJarButton).setId(RB_1);
+        dialog.findViewById(R.id.mediumJarButton).setId(RB_2);
+        dialog.findViewById(R.id.bigJarButton).setId(RB_3);
+    }
 
 
 }
