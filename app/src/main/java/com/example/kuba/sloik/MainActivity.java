@@ -65,8 +65,6 @@ public class MainActivity extends AppCompatActivity
     private final int RB_2 = 1002;
     private final int RB_3 = 1003;
 
-    DatabaseReference mDatabese;
-
     private List<JarClass> jarList;
     private ArrayList<UserClass> userList;
 
