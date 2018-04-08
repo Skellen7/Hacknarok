@@ -58,12 +58,19 @@ public class MainActivity extends AppCompatActivity
         OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
-    FloatingActionButton fab;
+    private FloatingActionButton fab;
 
-    DatabaseReference mDatabese;
+    private DatabaseReference mDatabese;
+    private DatabaseReference mDatabase;
 
-    List<JarClass> jarList;
+    private List<JarClass> jarList;
+    private ArrayList<UserClass> userList;
 
+    private String userID;
+    private UserClass userClassId;
+
+    private TextView userName;
+    private TextView userEmail;
 
 
     final Context context = this;
@@ -75,7 +82,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        userID = getIntent().getStringExtra("USER_ID");
+
         mDatabese = FirebaseDatabase.getInstance().getReference("jars");
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -121,9 +132,9 @@ public class MainActivity extends AppCompatActivity
                         RadioButton radioButton = (RadioButton) findViewById(selectedId);
 
                         String size = Integer.toString(selectedId);
-                        String name = ((EditText)(dialog.findViewById(R.id.jarName))).getText().toString();
-                        String description = ((EditText)(dialog.findViewById(R.id.jarDescription))).getText().toString();
-                        String date = ((EditText)(dialog.findViewById(R.id.jarDate))).getText().toString();
+                        String name = ((EditText) (dialog.findViewById(R.id.jarName))).getText().toString();
+                        String description = ((EditText) (dialog.findViewById(R.id.jarDescription))).getText().toString();
+                        String date = ((EditText) (dialog.findViewById(R.id.jarDate))).getText().toString();
                         String latitude = "test";
                         String longitude = "test";
 
@@ -131,7 +142,7 @@ public class MainActivity extends AppCompatActivity
                         // new user node would be /users/$userid/
                         String jarId = mDatabese.push().getKey();
 
-                        JarClass jar = new JarClass(size,name,description,date,latitude,longitude);
+                        JarClass jar = new JarClass(size, name, description, date, latitude, longitude);
 
                         mDatabese.child(jarId).setValue(jar);
 
@@ -145,30 +156,68 @@ public class MainActivity extends AppCompatActivity
             }
         });
         jarList = new ArrayList<>();
+        userList = new ArrayList<>();
 
+
+    }
+
+    private UserClass getUser() {
+        for (UserClass user : userList) {
+            if (user.getEmail().toString().equals(userID)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-            mDatabese.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
-                        JarClass jar = jarSnapshot.getValue(JarClass.class);
-                        Log.v("TEST", jar.getName());
-                        jarList.add(jar);
-                    }
-
+        mDatabese.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot jarSnapshot : dataSnapshot.getChildren()) {
+                    JarClass jar = jarSnapshot.getValue(JarClass.class);
+                    jarList.add(jar);
                 }
+            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.v("TEST","wrong");
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    UserClass user= userSnapshot.getValue(UserClass.class);
+                    if (user.getEmail().toString().equals(userID)) {
+
+                        userClassId = user;
+                    afterDB();}
+                    userList.add(user);
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+    }
+
+    private void afterDB() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        userEmail = (TextView) headerView.findViewById(R.id.current_user_email);
+        userEmail.setText(userID);
+        userName = (TextView) headerView.findViewById(R.id.current_user);
+        userName.setText(userClassId.getUsername());
+    }
+
 
     private String getId() {
         uID += 1;
@@ -262,13 +311,13 @@ public class MainActivity extends AppCompatActivity
         //description.setText(jar.description);
         //date.setText(jar.date);
 
-        Button back = (Button)dialog.findViewById(R.id.product_back);
+        Button back = (Button) dialog.findViewById(R.id.product_back);
 
         dialog.show();
 
-        back.setOnClickListener(new View.OnClickListener(){
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 dialog.dismiss();
             }
         });
@@ -297,26 +346,5 @@ public class MainActivity extends AppCompatActivity
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(m1, 12));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(m1));
 
-
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                 //Get Post object and use the values to update the UI
-                JarClass jar = dataSnapshot.getValue(JarClass.class);
-                Log.v("TEST",jar.description);
-                LatLng jarPosition = new LatLng(Integer.valueOf(jar.latitude), 15);
-
-                mMap.addMarker(new MarkerOptions().position(jarPosition).title(jar.name));
-                // ...
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
     }
-
-
-
 }
