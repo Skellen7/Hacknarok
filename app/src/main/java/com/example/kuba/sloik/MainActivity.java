@@ -59,14 +59,22 @@ public class MainActivity extends AppCompatActivity
     private final int PLACE_PICKER_REQUEST = 1;
     FloatingActionButton fab;
 
+    private DatabaseReference mDatabese;
+    private DatabaseReference mDatabase;
     private final int RB_1 = 1001;
     private final int RB_2 = 1002;
     private final int RB_3 = 1003;
 
     DatabaseReference mDatabese;
 
-    List<JarClass> jarList;
+    private List<JarClass> jarList;
+    private ArrayList<UserClass> userList;
 
+    private String userID;
+    private UserClass userClassId;
+
+    private TextView userName;
+    private TextView userEmail;
     //for choosing date while adding new jar
     private Button mDateDisplayButton;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
@@ -82,7 +90,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        userID = getIntent().getStringExtra("USER_ID");
+
         mDatabese = FirebaseDatabase.getInstance().getReference("jars");
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+
 
 
         setContentView(R.layout.activity_main);
@@ -178,8 +190,6 @@ public class MainActivity extends AppCompatActivity
                         int selectedId = radioGroup.getCheckedRadioButtonId();
                         RadioButton radioButton = (RadioButton) findViewById(selectedId);
 
-                        Log.v("RBTEST", Integer.toString(selectedId));
-
                         String size = Integer.toString(selectedId);
                         String name = ((EditText)(dialog.findViewById(R.id.jarName))).getText().toString();
                         String description = ((EditText)(dialog.findViewById(R.id.jarDescription))).getText().toString();
@@ -198,13 +208,25 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(context, "Słoik " + name + " dodany", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
 
+
                     }
                 });
 
             }
         });
         jarList = new ArrayList<>();
+        userList = new ArrayList<>();
 
+
+    }
+
+    private UserClass getUser() {
+        for (UserClass user : userList) {
+            if (user.getEmail().toString().equals(userID)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -222,30 +244,51 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-            mDatabese.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
-                        JarClass jar = jarSnapshot.getValue(JarClass.class);
-                        Log.v("TEST", jar.getName());
-                        jarList.add(jar);
-                        jarId++;
-                    }
-
+        mDatabese.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot jarSnapshot : dataSnapshot.getChildren()) {
+                    JarClass jar = jarSnapshot.getValue(JarClass.class);
+                    jarList.add(jar);
                 }
+            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.v("TEST","wrong");
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    UserClass user= userSnapshot.getValue(UserClass.class);
+                    if (user.getEmail().toString().equals(userID)) {
+
+                        userClassId = user;
+                    afterDB();}
+                    userList.add(user);
                 }
-            });
-        }
+            }
 
-    private String getId() {
-        jarId += 1;
-        return Integer.toString(jarId);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
     }
+
+    private void afterDB() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        userEmail = (TextView) headerView.findViewById(R.id.current_user_email);
+        userEmail.setText(userID);
+        userName = (TextView) headerView.findViewById(R.id.current_user);
+        userName.setText(userClassId.getUsername());
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -334,13 +377,13 @@ public class MainActivity extends AppCompatActivity
         //description.setText(jar.description);
         //date.setText(jar.date);
 
-        Button back = (Button)dialog.findViewById(R.id.product_back);
+        Button back = (Button) dialog.findViewById(R.id.product_back);
 
         dialog.show();
 
-        back.setOnClickListener(new View.OnClickListener(){
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 dialog.dismiss();
             }
         });
