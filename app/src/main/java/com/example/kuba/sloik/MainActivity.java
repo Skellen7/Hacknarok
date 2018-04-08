@@ -75,9 +75,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        jarList = new ArrayList<>();
 
         mDatabese = FirebaseDatabase.getInstance().getReference("jars");
+
+        super.onCreate(savedInstanceState);
+
 
 
         setContentView(R.layout.activity_main);
@@ -167,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        jarList = new ArrayList<>();
+
 
     }
 
@@ -185,24 +188,23 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-            mDatabese.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
-                        JarClass jar = jarSnapshot.getValue(JarClass.class);
-                        Log.v("TEST", jar.getName());
-                        jarList.add(jar);
-                        jarId++;
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.v("TEST","wrong");
-                }
-            });
+//            mDatabese.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                    for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
+//                        JarClass jar = jarSnapshot.getValue(JarClass.class);
+//                        Log.v("TEST", jar.getName());
+//                        jarList.add(jar);
+//                        jarId++;
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//                    Log.v("TEST","wrong");
+//                }
+//            });
         }
 
     private String getId() {
@@ -314,13 +316,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         CameraUpdateFactory.zoomTo(8.0f);
 
 
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
 
+//        Log.v("PRZED", " MAPA");
+//        for(JarClass jar : jarList){
+//            Log.v("ITERACJA", "iteruje");
+//            LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
+//            mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName()));
+//        }
+/*
         LatLng m1 = new LatLng(50.021842, 19.887334);
         LatLng m2 = new LatLng(50.019360, 19.881583);
         LatLng m3 = new LatLng(50.016795, 19.879395);
@@ -332,17 +340,34 @@ public class MainActivity extends AppCompatActivity
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(m1, 12));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(m1));
 
+*/
+
+        mDatabese.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot jarSnapshot : dataSnapshot.getChildren()){
+                    JarClass jar = jarSnapshot.getValue(JarClass.class);
+                    LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
+                    mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName()));
+                    jarList.add(jar);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.v("TEST","wrong");
+            }
+        });
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                  //Get Post object and use the values to update the UI
                 JarClass jar = dataSnapshot.getValue(JarClass.class);
-                Log.v("TEST",jar.description);
+                Log.v("MNIEJ",jar.description);
                 LatLng jarPosition = new LatLng(Integer.valueOf(jar.latitude), 15);
 
-                mMap.addMarker(new MarkerOptions().position(jarPosition).title(jar.name));
-                // ...
             }
 
             @Override
