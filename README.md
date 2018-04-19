@@ -13,17 +13,15 @@ Users collect points for successfull trades and tasty meals.
 
 ### How does it look?
 
-![ Screen1 ](/ScreenShots/screen1.png){:class="img-responsive"}
-![ Screen1 ](/ScreenShots/screen1.png){:height="50%" width="50%"}
-![ Screen2 ](/ScreenShots/screen2.png){:class="img-responsive"}
-![ Screen2 ](/ScreenShots/screen2.png){:height="50%" width="50%"}
+![ Screen1 ](/ScreenShots/screen1.png)
+![ Screen2 ](/ScreenShots/screen2.png)
 
 
 ## Built With
 
 * [Android Studio](https://developer.android.com/studio/index.html) - The Official IDE for Android
 * [Firebase Database](https://firebase.google.com/docs/database/) - Cloud-hosted database.
-* [Google Maps API] (https://developers.google.com/maps/) - API providing maps and navigation.
+* [Google Maps API](https://developers.google.com/maps/) - API providing maps and navigation.
 
 ## Authors
 
