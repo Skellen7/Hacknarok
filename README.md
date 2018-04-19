@@ -13,8 +13,11 @@ Users collect points for successfull trades and tasty meals.
 
 ### How does it look?
 
-![ Screen1 ](/ScreenShots/screen1.png)
-![ Screen2 ](/ScreenShots/screen2.png)
+![ Screen1 ](/ScreenShots/screen1.png){:class="img-responsive"}
+![ Screen1 ](/ScreenShots/screen1.png){:height="50%" width="50%"}
+![ Screen2 ](/ScreenShots/screen2.png){:class="img-responsive"}
+![ Screen2 ](/ScreenShots/screen2.png){:height="50%" width="50%"}
+
 
 ## Built With
 
