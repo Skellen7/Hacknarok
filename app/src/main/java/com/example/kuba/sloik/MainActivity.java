@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -44,6 +43,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity
 
     private GoogleMap mMap;
     private Button placePickerButton;
-    private LocationManager locationManager;
     private final int PLACE_PICKER_REQUEST = 1;
     FloatingActionButton fab;
 
@@ -94,7 +93,6 @@ public class MainActivity extends AppCompatActivity
     private FusedLocationProviderClient mFusedLocationClient;
 
     //permisions
-    private boolean mLocationPermissionGranted;
     private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION =1;
 
     @Override
@@ -407,7 +405,8 @@ public class MainActivity extends AppCompatActivity
                 for (DataSnapshot jarSnapshot : dataSnapshot.getChildren()) {
                     JarClass jar = jarSnapshot.getValue(JarClass.class);
                     LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
-                    mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName()));
+                    mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
                     jarList.add(jar);
                 }
             }
@@ -434,8 +433,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setMapView() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
         Location location = null;
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {

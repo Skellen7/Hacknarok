@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.putExtra("USER_ID", "ad@min.admin");
+                intent.putExtra("USER_ID", "admin@admin");
                 startActivity(intent);
             }
         });

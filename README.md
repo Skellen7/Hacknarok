@@ -1,24 +1,27 @@
 # Słoiki
 
-An Android application based on a simple idea - if someone has toomuch of one type of food, he can exchange it with other people. All exchange offers in the area are presented on the map.
+An Android app based on a simple idea of exchanging food.
+It's a trade platform, where the only product and currency are so called "jars" (packaged food).
+
 
 ## What is it?
 
-Do you have too many dumplings? In our application, you will exchange it for meatballs! In our app you can add "jars with food" to the map and say that you would like to exchange it for some other food.
-All jars in the area are presented on the map or list. When you want to add new jar, just tap "+" button and select size and food type.
-Users have their own accounts and collect points for good exchanges and tasty meals. 
+Do you have too many dumplings? In our application, you will exchange it for meatballs! In our app you can add "jars with food" that you want to exchange on a map and wait for other users from 
+nearest location that will answer your offer with their own jars.
+Of course if you're really hungry you can do the same and look for people who already posted their offers and choose the best one for you :)
+Users collect points for successfull trades and tasty meals.
 
-### How it looks?
+### How does it look?
 
 ![ Screen1 ](/ScreenShots/screen1.png)
 ![ Screen2 ](/ScreenShots/screen2.png)
-![ Screen3 ](/ScreenShots/screen3.png)
-![ Screen4 ](/ScreenShots/screen4.png)
+
 
 ## Built With
 
 * [Android Studio](https://developer.android.com/studio/index.html) - The Official IDE for Android
 * [Firebase Database](https://firebase.google.com/docs/database/) - Cloud-hosted database.
+* [Google Maps API](https://developers.google.com/maps/) - API providing maps and navigation.
 
 ## Authors
 
