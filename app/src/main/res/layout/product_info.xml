@@ -96,7 +96,7 @@
                 app:layout_constraintVertical_bias="0.979" />
 
             <Button
-                android:id="@+id/button5"
+                android:id="@+id/product_exchange"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"

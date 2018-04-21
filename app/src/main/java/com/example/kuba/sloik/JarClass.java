@@ -1,10 +1,12 @@
 package com.example.kuba.sloik;
 
+import java.io.Serializable;
+
 /**
  * Created by Grove on 10.03.2018.
  */
 
-public class JarClass {
+public class JarClass implements Serializable {
     private String jarId;
     private String ownerId;
     public String size;

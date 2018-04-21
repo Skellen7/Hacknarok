@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity
     private final int RB_2 = 1002;
     private final int RB_3 = 1003;
 
-    private List<JarClass> jarList;
+    private ArrayList<JarClass> jarList;
     private ArrayList<UserClass> userList;
 
     private String userID;
@@ -270,10 +270,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Wrapper.place = PlacePicker.getPlace(data, this);
-
                 //unnecessary toast giving some information
                 String toastMsg = String.format("Lokalizacja: %s", Wrapper.place.getName());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
@@ -286,6 +286,8 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+
 
     @Override
     protected void onStart() {
@@ -360,11 +362,16 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_info) {
+        if (id == R.id.nav_home) {
+            startActivity(new Intent(MainActivity.this, MainActivity.class));
+        } else if (id == R.id.nav_info) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
-            startActivity(new Intent(MainActivity.this, Inventory.class));
-
+            Intent i = new Intent(MainActivity.this, Inventory.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("jarList", jarList);
+            i.putExtras(bundle);
+            startActivity(i);
         } else if (id == R.id.nav_list) {
             startActivity(new Intent(MainActivity.this, JarList.class));
 
@@ -377,6 +384,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
             startActivity(new Intent(MainActivity.this, MainActivity.class));
 
+        } else if (id == R.id.nav_offers) {
+            startActivity(new Intent(MainActivity.this, OffersActivity.class));
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -386,16 +396,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.product_info);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final Dialog productDialog = new Dialog(context);
+        productDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        productDialog.setContentView(R.layout.product_info);
+        productDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        TextView jarTitle = dialog.findViewById(R.id.jarTitle);
-        TextView jarDescription = dialog.findViewById(R.id.description);
-        TextView jarDate = dialog.findViewById(R.id.jar_date);
+        TextView jarTitle = productDialog.findViewById(R.id.jarTitle);
+        TextView jarDescription = productDialog.findViewById(R.id.description);
+        TextView jarDate = productDialog.findViewById(R.id.jar_date);
         ImageView jarSize;
-        final ImageView jarPhoto = dialog.findViewById(R.id.mainJar);
+        final ImageView jarPhoto = productDialog.findViewById(R.id.mainJar);
 
         for(JarClass jar : jarList){
             if(jar.getJarId().equals(marker.getTag())){
@@ -404,6 +414,10 @@ public class MainActivity extends AppCompatActivity
                 jarDescription.setText(jar.getDescription());
                 jarDate.setText(jar.getDate());
 
+        ImageView big_jar = productDialog.findViewById(R.id.jar_big_icon);
+        ImageView medium_jar = productDialog.findViewById(R.id.jar_medium_icon);
+        ImageView small_jar = productDialog.findViewById(R.id.jar_small_icon);
+              
                 mStorage.child("Photos").child(jar.getJarId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri_) {
@@ -422,15 +436,15 @@ public class MainActivity extends AppCompatActivity
 
                 switch(jar.getSize()){
                     case "1001":
-                        jarSize = dialog.findViewById(R.id.jar_small_icon);
+                        jarSize = productDialog.findViewById(R.id.jar_small_icon);
                         jarSize.setImageResource(R.drawable.ic_jar_of_jam_small);
                         break;
                     case "1002":
-                        jarSize = dialog.findViewById(R.id.jar_medium_icon);
+                        jarSize = productDialog.findViewById(R.id.jar_medium_icon);
                         jarSize.setImageResource(R.drawable.ic_jar_of_jam_medium);
                         break;
                     case "1003":
-                        jarSize = dialog.findViewById(R.id.jar_big_icon);
+                        jarSize = productDialog.findViewById(R.id.jar_big_icon);
                         jarSize.setImageResource(R.drawable.ic_jar_of_jam_big);
                         break;
                 }
@@ -438,14 +452,31 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        Button back = (Button) dialog.findViewById(R.id.product_back);
+        Button back = (Button) productDialog.findViewById(R.id.product_back);
+        Button exchange = (Button) productDialog.findViewById(R.id.product_exchange);
 
-        dialog.show();
+        productDialog.show();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                productDialog.dismiss();
+            }
+        });
+
+        exchange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                productDialog.cancel();
+                final Dialog exchangeDialog = new Dialog(context);
+                exchangeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                exchangeDialog.setContentView(R.layout.exchange_dialog);
+                exchangeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                exchangeDialog.show();
+
+
+
             }
         });
 

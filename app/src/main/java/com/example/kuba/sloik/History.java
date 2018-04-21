@@ -24,15 +24,6 @@ public class History extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -81,7 +72,9 @@ public class History extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_info) {
+        if (id == R.id.nav_home) {
+            startActivity(new Intent(History.this, MainActivity.class));
+        } else if (id == R.id.nav_info) {
             startActivity(new Intent(History.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
             startActivity(new Intent(History.this, Inventory.class));
@@ -90,13 +83,13 @@ public class History extends AppCompatActivity
             startActivity(new Intent(History.this, JarList.class));
 
         } else if (id == R.id.nav_history) {
-            startActivity(new Intent(History.this, MainActivity.class));
+            startActivity(new Intent(History.this, History.class));
 
         } else if (id == R.id.nav_share) {
-            startActivity(new Intent(History.this, ProfileActivity.class));
+            startActivity(new Intent(History.this, MainActivity.class));
 
         } else if (id == R.id.nav_send) {
-            startActivity(new Intent(History.this, ProfileActivity.class));
+            startActivity(new Intent(History.this, MainActivity.class));
 
         }
 

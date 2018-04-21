@@ -73,22 +73,24 @@ public class JarList extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_info) {
+        if (id == R.id.nav_home) {
+            startActivity(new Intent(JarList.this, MainActivity.class));
+        } else if (id == R.id.nav_info) {
             startActivity(new Intent(JarList.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
             startActivity(new Intent(JarList.this, Inventory.class));
 
         } else if (id == R.id.nav_list) {
-            startActivity(new Intent(JarList.this, MainActivity.class));
+            startActivity(new Intent(JarList.this, JarList.class));
 
         } else if (id == R.id.nav_history) {
             startActivity(new Intent(JarList.this, History.class));
 
         } else if (id == R.id.nav_share) {
-            startActivity(new Intent(JarList.this, ProfileActivity.class));
+            startActivity(new Intent(JarList.this, MainActivity.class));
 
         } else if (id == R.id.nav_send) {
-            startActivity(new Intent(JarList.this, ProfileActivity.class));
+            startActivity(new Intent(JarList.this, MainActivity.class));
 
         }
 
