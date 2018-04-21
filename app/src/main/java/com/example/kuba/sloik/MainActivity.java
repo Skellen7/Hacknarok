@@ -2,6 +2,7 @@ package com.example.kuba.sloik;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -9,12 +10,16 @@ import android.graphics.drawable.ColorDrawable;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,6 +40,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -48,15 +54,24 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -88,10 +103,16 @@ public class MainActivity extends AppCompatActivity
 
 
     final Context context = this;
-    private int jarId = 0;
     private String session_id = "23";
 
     private FusedLocationProviderClient mFusedLocationClient;
+
+    //add photo
+    Uri globalPhoto;
+    private StorageReference mStorage;
+    static final int REQUEST_IMAGE = 2;
+    String mCurrentPhotoPath;
+
 
     //permisions
     private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION =1;
@@ -101,6 +122,7 @@ public class MainActivity extends AppCompatActivity
         jarList = new ArrayList<>();
 
         mDatabese = FirebaseDatabase.getInstance().getReference("jars");
+        mStorage = FirebaseStorage.getInstance().getReference();
 
         super.onCreate(savedInstanceState);
 
@@ -132,6 +154,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 final Dialog dialog = new Dialog(context);
+                final String jarId = mDatabese.push().getKey();
                 dialog.setContentView(R.layout.activity_sloik_add);
                 dialog.setTitle("Title...");
                 dialog.show();
@@ -212,7 +235,6 @@ public class MainActivity extends AppCompatActivity
 
                         // Creating new user node, which returns the unique key value
                         // new user node would be /users/$userid/
-                        String jarId = mDatabese.push().getKey();
 
                         JarClass jar = new JarClass(String.valueOf(jarId), session_id, size, name, description, date, latitude, longitude);
 
@@ -224,7 +246,13 @@ public class MainActivity extends AppCompatActivity
 
                     }
                 });
-
+                Button addPhotoButton = (Button) dialog.findViewById(R.id.addPhotoButton);
+                addPhotoButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dispatchTakePictureIntent(jarId);
+                    }
+                });
             }
         });
         userList = new ArrayList<>();
@@ -251,6 +279,12 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
         }
+        if(requestCode == REQUEST_IMAGE && resultCode == RESULT_OK){
+            //Uri uri = data.getData();
+            StorageReference filepath = mStorage.child("Photos").child(globalPhoto.getLastPathSegment());
+            filepath.putFile(globalPhoto);
+        }
+
     }
 
     @Override
@@ -361,12 +395,7 @@ public class MainActivity extends AppCompatActivity
         TextView jarDescription = dialog.findViewById(R.id.description);
         TextView jarDate = dialog.findViewById(R.id.jar_date);
         ImageView jarSize;
-
-        //String test = jarList.get(0).getDescription();
-        //jarDescription.setText(test);
-
-
-
+        final ImageView jarPhoto = dialog.findViewById(R.id.mainJar);
 
         for(JarClass jar : jarList){
             if(jar.getJarId().equals(marker.getTag())){
@@ -374,6 +403,22 @@ public class MainActivity extends AppCompatActivity
                 jarTitle.setText(jar.getName());
                 jarDescription.setText(jar.getDescription());
                 jarDate.setText(jar.getDate());
+
+                mStorage.child("Photos").child(jar.getJarId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri_) {
+                        Log.v("URI", uri_.toString());
+                        Wrapper.uri = uri_;
+                        // Got the download URL for 'users/me/profile.png'
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+                Glide.with(this).load(Wrapper.uri).into(jarPhoto);
 
                 switch(jar.getSize()){
                     case "1001":
@@ -425,7 +470,8 @@ public class MainActivity extends AppCompatActivity
                     JarClass jar = jarSnapshot.getValue(JarClass.class);
                     LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
                     mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.jar_marker)))
                             .setTag(jar.getJarId());
                     jarList.add(jar);
                 }
@@ -533,4 +579,42 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void dispatchTakePictureIntent(String jarId) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile(jarId);
+            } catch (IOException ex) {
+                // Error occurred while creating the File...
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                globalPhoto = photoURI;
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE);
+            }
+        }
+    }
+
+    private File createImageFile(String jarID) throws IOException {
+        // Create an image file name
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = new File(storageDir, jarID);
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        String t = image.getName();
+        Log.v("test", t);
+        //writeNewUrl(t,4);
+        return image;
+    }
+    private boolean cameraExist(){
+        return getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    }
 }
