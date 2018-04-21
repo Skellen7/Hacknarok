@@ -13,6 +13,10 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Inwentarz" />
         <item
+            android:id="@+id/nav_offers"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Twoje oferty" />
+        <item
             android:id="@+id/nav_list"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Lista słoików" />
