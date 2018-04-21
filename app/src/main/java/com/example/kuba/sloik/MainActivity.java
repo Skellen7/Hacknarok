@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity
     private final int RB_2 = 1002;
     private final int RB_3 = 1003;
 
-    private List<JarClass> jarList;
+    private ArrayList<JarClass> jarList;
     private ArrayList<UserClass> userList;
 
     private String userID;
@@ -98,8 +98,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         jarList = new ArrayList<>();
-
-        mDatabese = FirebaseDatabase.getInstance().getReference("jars");
 
         super.onCreate(savedInstanceState);
 
@@ -220,10 +218,8 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(context, "Słoik " + name + " dodany", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
 
-
                     }
                 });
-
             }
         });
         userList = new ArrayList<>();
@@ -274,8 +270,6 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-
-
     }
 
     private void afterDB() {
@@ -328,7 +322,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_info) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
-            startActivity(new Intent(MainActivity.this, Inventory.class));
+            Intent i = new Intent(MainActivity.this, Inventory.class);
+            i.putExtra("jarList", jarList);
+            startActivity(i);
 
         } else if (id == R.id.nav_list) {
             startActivity(new Intent(MainActivity.this, JarList.class));

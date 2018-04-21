@@ -73,8 +73,10 @@ public class ProfileActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_info) {
+        if (id == R.id.nav_home) {
             startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+        } else if (id == R.id.nav_info) {
+            startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
             startActivity(new Intent(ProfileActivity.this, Inventory.class));
 
