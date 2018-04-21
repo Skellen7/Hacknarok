@@ -1,8 +1,11 @@
 package com.example.kuba.sloik;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,9 +22,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -49,6 +54,7 @@ public class Inventory extends AppCompatActivity
 
     private ArrayList<JarClass> jarList;
 
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,17 +74,15 @@ public class Inventory extends AppCompatActivity
         // adding one_jars to inventory in scroll view mode
         linearLayout = (LinearLayout) findViewById(R.id.inventory_content_container);
         for(int i=0; i < jarList.size(); i++){
-            Log.v("TEST", "tu jestem!!");
 
             View oneJar = getLayoutInflater().inflate(R.layout.one_jar_view,null);
             oneJar.setId(i);
-            TextView textView = (TextView) oneJar.findViewById(R.id.my_jar_text);
-            textView.setText(jarList.get(i).name);
+            TextView jarName = (TextView) oneJar.findViewById(R.id.my_jar_text);
+            jarName.setText(jarList.get(i).name);
             oneJar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.v("TEST", "relative");
-                    Log.v("TEST", String.valueOf(view.getId()));
+                    clickedOneJar(view);
                 }
             });
             linearLayout.addView(oneJar);
@@ -95,6 +99,66 @@ public class Inventory extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+
+
+    public void clickedOneJar(View view) {
+        final Dialog productDialog = new Dialog(context);
+        productDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        productDialog.setContentView(R.layout.product_info);
+        productDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ImageView big_jar = productDialog.findViewById(R.id.jar_big_icon);
+        ImageView medium_jar = productDialog.findViewById(R.id.jar_medium_icon);
+        ImageView small_jar = productDialog.findViewById(R.id.jar_small_icon);
+
+        ImageView jar_img = productDialog.findViewById(R.id.mainJar);
+        TextView title = productDialog.findViewById(R.id.jarTitle);
+        TextView description = productDialog.findViewById(R.id.description);
+        TextView date = productDialog.findViewById(R.id.jar_date);
+
+        //int i = ((RelativeLayout)(view.getParent())).getId();
+        JarClass jar = jarList.get(view.getId());
+        title.setText(jar.name);
+        description.setText(jar.description);
+        date.setText(jar.date);
+
+
+
+
+        //if(jar.size=="small") small_jar.setImageResource(R.drawable.ic_jar_of_jam_small);
+        //else if(jar.size=="medium") medium_jar.setImageResource(R.drawable.ic_jar_of_jam_medium);
+        //else big_jar.setImageResource(R.drawable.ic_jar_of_jam_big);
+
+        //jar_img.setImageBitmap(jar.img);
+        //title.setText(jar.title);
+        //description.setText(jar.description);
+        //date.setText(jar.date);
+
+        Button back = (Button) productDialog.findViewById(R.id.product_back);
+        Button exchange = (Button) productDialog.findViewById(R.id.product_exchange);
+
+        productDialog.show();
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                productDialog.dismiss();
+            }
+        });
+
+        exchange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                productDialog.cancel();
+                final Dialog exchangeDialog = new Dialog(context);
+                exchangeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                exchangeDialog.setContentView(R.layout.exchange_dialog);
+                exchangeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                exchangeDialog.show();
+            }
+        });
+    }
 
 
     public void deleteJar(View view) {

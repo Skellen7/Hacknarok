@@ -434,9 +434,6 @@ public class MainActivity extends AppCompatActivity
                 exchangeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
                 exchangeDialog.show();
-
-
-
             }
         });
 
