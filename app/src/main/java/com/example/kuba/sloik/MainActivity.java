@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
     private final int RB_2 = 1002;
     private final int RB_3 = 1003;
 
-    private List<JarClass> jarList;
+    private ArrayList<JarClass> jarList;
     private ArrayList<UserClass> userList;
 
     private String userID;
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity
 
 
     final Context context = this;
+    private int jarId = 0;
     private int session_id = 1;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -229,6 +230,7 @@ public class MainActivity extends AppCompatActivity
 
                         // Creating new user node, which returns the unique key value
                         // new user node would be /users/$userid/
+                        String jarId = mDatabese.push().getKey();
 
                         JarClass jar = new JarClass(String.valueOf(jarId), size, name, description, date, latitude, longitude);
 
@@ -356,11 +358,16 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_info) {
+        if (id == R.id.nav_home) {
+            startActivity(new Intent(MainActivity.this, MainActivity.class));
+        } else if (id == R.id.nav_info) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
-            startActivity(new Intent(MainActivity.this, Inventory.class));
-
+            Intent i = new Intent(MainActivity.this, Inventory.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("jarList", jarList);
+            i.putExtras(bundle);
+            startActivity(i);
         } else if (id == R.id.nav_list) {
             startActivity(new Intent(MainActivity.this, JarList.class));
 
