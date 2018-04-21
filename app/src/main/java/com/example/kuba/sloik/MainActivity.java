@@ -9,11 +9,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -52,10 +56,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -92,12 +102,22 @@ public class MainActivity extends AppCompatActivity
 
     private FusedLocationProviderClient mFusedLocationClient;
 
+    //add photo
+    Uri globalPhoto;
+    private StorageReference mStorage;
+    static final int REQUEST_IMAGE = 2;
+    String mCurrentPhotoPath;
+
+
     //permisions
     private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION =1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         jarList = new ArrayList<>();
+
+        mDatabese = FirebaseDatabase.getInstance().getReference("jars");
+        mStorage = FirebaseStorage.getInstance().getReference();
 
         super.onCreate(savedInstanceState);
 
@@ -129,6 +149,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 final Dialog dialog = new Dialog(context);
+                final String jarId = mDatabese.push().getKey();
                 dialog.setContentView(R.layout.activity_sloik_add);
                 dialog.setTitle("Title...");
                 dialog.show();
@@ -218,6 +239,14 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(context, "Słoik " + name + " dodany", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
 
+
+                    }
+                });
+                Button addPhotoButton = (Button) dialog.findViewById(R.id.addPhotoButton);
+                addPhotoButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dispatchTakePictureIntent(jarId);
                     }
                 });
             }
@@ -237,16 +266,24 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Wrapper.place = PlacePicker.getPlace(data, this);
-
                 //unnecessary toast giving some information
                 String toastMsg = String.format("Place: %s", Wrapper.place.getName());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
         }
+        if(requestCode == REQUEST_IMAGE && resultCode == RESULT_OK){
+            //Uri uri = data.getData();
+            StorageReference filepath = mStorage.child("Photos").child(globalPhoto.getLastPathSegment());
+            filepath.putFile(globalPhoto);
+        }
+
     }
+
+
 
     @Override
     protected void onStart() {
@@ -270,6 +307,8 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+
+
     }
 
     private void afterDB() {
@@ -319,13 +358,16 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_info) {
+        if (id == R.id.nav_home) {
+            startActivity(new Intent(MainActivity.this, MainActivity.class));
+        } else if (id == R.id.nav_info) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
             Intent i = new Intent(MainActivity.this, Inventory.class);
-            i.putExtra("jarList", jarList);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("jarList", jarList);
+            i.putExtras(bundle);
             startActivity(i);
-
         } else if (id == R.id.nav_list) {
             startActivity(new Intent(MainActivity.this, JarList.class));
 
@@ -347,19 +389,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.product_info);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final Dialog productDialog = new Dialog(context);
+        productDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        productDialog.setContentView(R.layout.product_info);
+        productDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        ImageView big_jar = dialog.findViewById(R.id.jar_big_icon);
-        ImageView medium_jar = dialog.findViewById(R.id.jar_medium_icon);
-        ImageView small_jar = dialog.findViewById(R.id.jar_small_icon);
+        ImageView big_jar = productDialog.findViewById(R.id.jar_big_icon);
+        ImageView medium_jar = productDialog.findViewById(R.id.jar_medium_icon);
+        ImageView small_jar = productDialog.findViewById(R.id.jar_small_icon);
 
-        ImageView jar_img = dialog.findViewById(R.id.mainJar);
-        TextView title = dialog.findViewById(R.id.jarTitle);
-        TextView description = dialog.findViewById(R.id.description);
-        TextView date = dialog.findViewById(R.id.jar_date);
+        ImageView jar_img = productDialog.findViewById(R.id.mainJar);
+        TextView title = productDialog.findViewById(R.id.jarTitle);
+        TextView description = productDialog.findViewById(R.id.description);
+        TextView date = productDialog.findViewById(R.id.jar_date);
 
         //if(jar.size=="small") small_jar.setImageResource(R.drawable.ic_jar_of_jam_small);
         //else if(jar.size=="medium") medium_jar.setImageResource(R.drawable.ic_jar_of_jam_medium);
@@ -370,14 +412,31 @@ public class MainActivity extends AppCompatActivity
         //description.setText(jar.description);
         //date.setText(jar.date);
 
-        Button back = (Button) dialog.findViewById(R.id.product_back);
+        Button back = (Button) productDialog.findViewById(R.id.product_back);
+        Button exchange = (Button) productDialog.findViewById(R.id.product_exchange);
 
-        dialog.show();
+        productDialog.show();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                productDialog.dismiss();
+            }
+        });
+
+        exchange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                productDialog.cancel();
+                final Dialog exchangeDialog = new Dialog(context);
+                exchangeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                exchangeDialog.setContentView(R.layout.exchange_dialog);
+                exchangeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                exchangeDialog.show();
+
+
+
             }
         });
 
@@ -510,4 +569,42 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void dispatchTakePictureIntent(String jarId) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile(jarId);
+            } catch (IOException ex) {
+                // Error occurred while creating the File...
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                globalPhoto = photoURI;
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE);
+            }
+        }
+    }
+
+    private File createImageFile(String jarID) throws IOException {
+        // Create an image file name
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = new File(storageDir, jarID);
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        String t = image.getName();
+        Log.v("test", t);
+        //writeNewUrl(t,4);
+        return image;
+    }
+    private boolean cameraExist(){
+        return getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    }
 }

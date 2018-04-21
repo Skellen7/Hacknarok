@@ -83,13 +83,13 @@ public class History extends AppCompatActivity
             startActivity(new Intent(History.this, JarList.class));
 
         } else if (id == R.id.nav_history) {
-            startActivity(new Intent(History.this, MainActivity.class));
+            startActivity(new Intent(History.this, History.class));
 
         } else if (id == R.id.nav_share) {
-            startActivity(new Intent(History.this, ProfileActivity.class));
+            startActivity(new Intent(History.this, MainActivity.class));
 
         } else if (id == R.id.nav_send) {
-            startActivity(new Intent(History.this, ProfileActivity.class));
+            startActivity(new Intent(History.this, MainActivity.class));
 
         }
 

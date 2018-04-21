@@ -87,10 +87,10 @@ public class ProfileActivity extends AppCompatActivity
             startActivity(new Intent(ProfileActivity.this, History.class));
 
         } else if (id == R.id.nav_share) {
-            startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+            startActivity(new Intent(ProfileActivity.this, MainActivity.class));
 
         } else if (id == R.id.nav_send) {
-            startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+            startActivity(new Intent(ProfileActivity.this, MainActivity.class));
 
         }
 

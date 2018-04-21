@@ -58,7 +58,12 @@ public class Inventory extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        jarList = (ArrayList<JarClass>) getIntent().getSerializableExtra("jarList");
+        Bundle bundle = getIntent().getExtras();
+        jarList = (ArrayList<JarClass>) bundle.getSerializable("jarList");
+
+        for(JarClass jr: jarList) {
+            Log.v("TEST", jr.name);
+        }
 
         // adding one_jars to inventory in scroll view mode
         linearLayout = (LinearLayout) findViewById(R.id.inventory_content_container);
@@ -67,7 +72,7 @@ public class Inventory extends AppCompatActivity
 
             View oneJar = getLayoutInflater().inflate(R.layout.one_jar_view,null);
             oneJar.setId(i);
-            TextView textView = (TextView) findViewById(R.id.my_jar_text);
+            TextView textView = (TextView) oneJar.findViewById(R.id.my_jar_text);
             textView.setText(jarList.get(i).name);
             oneJar.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -91,8 +96,9 @@ public class Inventory extends AppCompatActivity
     }
 
 
+
     public void deleteJar(View view) {
-        linearLayout.removeViewAt((((RelativeLayout)view.getParent()).getId())-1);
+        linearLayout.removeViewAt((((RelativeLayout)view.getParent()).getId()));
     }
 
     @Override
@@ -138,7 +144,7 @@ public class Inventory extends AppCompatActivity
         } else if (id == R.id.nav_info) {
             startActivity(new Intent(Inventory.this, ProfileActivity.class));
         } else if (id == R.id.nav_inventory) {
-            startActivity(new Intent(Inventory.this, MainActivity.class));
+            startActivity(new Intent(Inventory.this, Inventory.class));
 
         } else if (id == R.id.nav_list) {
             startActivity(new Intent(Inventory.this, JarList.class));
