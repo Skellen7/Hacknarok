@@ -382,19 +382,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.product_info);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final Dialog productDialog = new Dialog(context);
+        productDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        productDialog.setContentView(R.layout.product_info);
+        productDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        ImageView big_jar = dialog.findViewById(R.id.jar_big_icon);
-        ImageView medium_jar = dialog.findViewById(R.id.jar_medium_icon);
-        ImageView small_jar = dialog.findViewById(R.id.jar_small_icon);
+        ImageView big_jar = productDialog.findViewById(R.id.jar_big_icon);
+        ImageView medium_jar = productDialog.findViewById(R.id.jar_medium_icon);
+        ImageView small_jar = productDialog.findViewById(R.id.jar_small_icon);
 
-        ImageView jar_img = dialog.findViewById(R.id.mainJar);
-        TextView title = dialog.findViewById(R.id.jarTitle);
-        TextView description = dialog.findViewById(R.id.description);
-        TextView date = dialog.findViewById(R.id.jar_date);
+        ImageView jar_img = productDialog.findViewById(R.id.mainJar);
+        TextView title = productDialog.findViewById(R.id.jarTitle);
+        TextView description = productDialog.findViewById(R.id.description);
+        TextView date = productDialog.findViewById(R.id.jar_date);
 
         //if(jar.size=="small") small_jar.setImageResource(R.drawable.ic_jar_of_jam_small);
         //else if(jar.size=="medium") medium_jar.setImageResource(R.drawable.ic_jar_of_jam_medium);
@@ -405,14 +405,31 @@ public class MainActivity extends AppCompatActivity
         //description.setText(jar.description);
         //date.setText(jar.date);
 
-        Button back = (Button) dialog.findViewById(R.id.product_back);
+        Button back = (Button) productDialog.findViewById(R.id.product_back);
+        Button exchange = (Button) productDialog.findViewById(R.id.product_exchange);
 
-        dialog.show();
+        productDialog.show();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                productDialog.dismiss();
+            }
+        });
+
+        exchange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                productDialog.cancel();
+                final Dialog exchangeDialog = new Dialog(context);
+                exchangeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                exchangeDialog.setContentView(R.layout.exchange_dialog);
+                exchangeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                exchangeDialog.show();
+
+
+
             }
         });
 
