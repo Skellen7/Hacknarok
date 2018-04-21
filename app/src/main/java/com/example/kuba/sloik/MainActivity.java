@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity
 
     final Context context = this;
     private int jarId = 0;
-    private int session_id = 1;
+    private String session_id = "23";
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity
                         // new user node would be /users/$userid/
                         String jarId = mDatabese.push().getKey();
 
-                        JarClass jar = new JarClass(String.valueOf(jarId), size, name, description, date, latitude, longitude);
+                        JarClass jar = new JarClass(String.valueOf(jarId), session_id, size, name, description, date, latitude, longitude);
 
                         mDatabese.child(jarId).setValue(jar);
 
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity
                 Wrapper.place = PlacePicker.getPlace(data, this);
 
                 //unnecessary toast giving some information
-                String toastMsg = String.format("Place: %s", Wrapper.place.getName());
+                String toastMsg = String.format("Lokalizacja: %s", Wrapper.place.getName());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
         }
@@ -356,23 +357,41 @@ public class MainActivity extends AppCompatActivity
         dialog.setContentView(R.layout.product_info);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        ImageView big_jar = dialog.findViewById(R.id.jar_big_icon);
-        ImageView medium_jar = dialog.findViewById(R.id.jar_medium_icon);
-        ImageView small_jar = dialog.findViewById(R.id.jar_small_icon);
+        TextView jarTitle = dialog.findViewById(R.id.jarTitle);
+        TextView jarDescription = dialog.findViewById(R.id.description);
+        TextView jarDate = dialog.findViewById(R.id.jar_date);
+        ImageView jarSize;
 
-        ImageView jar_img = dialog.findViewById(R.id.mainJar);
-        TextView title = dialog.findViewById(R.id.jarTitle);
-        TextView description = dialog.findViewById(R.id.description);
-        TextView date = dialog.findViewById(R.id.jar_date);
+        //String test = jarList.get(0).getDescription();
+        //jarDescription.setText(test);
 
-        //if(jar.size=="small") small_jar.setImageResource(R.drawable.ic_jar_of_jam_small);
-        //else if(jar.size=="medium") medium_jar.setImageResource(R.drawable.ic_jar_of_jam_medium);
-        //else big_jar.setImageResource(R.drawable.ic_jar_of_jam_big);
 
-        //jar_img.setImageBitmap(jar.img);
-        //title.setText(jar.title);
-        //description.setText(jar.description);
-        //date.setText(jar.date);
+
+
+        for(JarClass jar : jarList){
+            if(jar.getJarId().equals(marker.getTag())){
+                Log.v("TEST", jar.getName());
+                jarTitle.setText(jar.getName());
+                jarDescription.setText(jar.getDescription());
+                jarDate.setText(jar.getDate());
+
+                switch(jar.getSize()){
+                    case "1001":
+                        jarSize = dialog.findViewById(R.id.jar_small_icon);
+                        jarSize.setImageResource(R.drawable.ic_jar_of_jam_small);
+                        break;
+                    case "1002":
+                        jarSize = dialog.findViewById(R.id.jar_medium_icon);
+                        jarSize.setImageResource(R.drawable.ic_jar_of_jam_medium);
+                        break;
+                    case "1003":
+                        jarSize = dialog.findViewById(R.id.jar_big_icon);
+                        jarSize.setImageResource(R.drawable.ic_jar_of_jam_big);
+                        break;
+                }
+                break;
+            }
+        }
 
         Button back = (Button) dialog.findViewById(R.id.product_back);
 
@@ -406,7 +425,8 @@ public class MainActivity extends AppCompatActivity
                     JarClass jar = jarSnapshot.getValue(JarClass.class);
                     LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
                     mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
+                            .setTag(jar.getJarId());
                     jarList.add(jar);
                 }
             }
@@ -422,7 +442,6 @@ public class MainActivity extends AppCompatActivity
                 //Get Post object and use the values to update the UI
                 JarClass jar = dataSnapshot.getValue(JarClass.class);
                 LatLng jarPosition = new LatLng(Integer.valueOf(jar.latitude), 15);
-
             }
 
             @Override
