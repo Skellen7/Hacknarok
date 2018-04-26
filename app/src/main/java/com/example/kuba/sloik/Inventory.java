@@ -67,15 +67,15 @@ public class Inventory extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         jarList = (ArrayList<JarClass>) bundle.getSerializable("jarList");
 
-        for(JarClass jr: jarList) {
+        for (JarClass jr : jarList) {
             Log.v("TEST", jr.name);
         }
 
         // adding one_jars to inventory in scroll view mode
         linearLayout = (LinearLayout) findViewById(R.id.inventory_content_container);
-        for(int i=0; i < jarList.size(); i++){
+        for (int i = 0; i < jarList.size(); i++) {
 
-            View oneJar = getLayoutInflater().inflate(R.layout.one_jar_view,null);
+            View oneJar = getLayoutInflater().inflate(R.layout.one_jar_view, null);
             oneJar.setId(i);
             TextView jarName = (TextView) oneJar.findViewById(R.id.my_jar_text);
             jarName.setText(jarList.get(i).name);
@@ -100,7 +100,6 @@ public class Inventory extends AppCompatActivity
     }
 
 
-
     public void clickedOneJar(View view) {
         final Dialog productDialog = new Dialog(context);
         productDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -116,23 +115,11 @@ public class Inventory extends AppCompatActivity
         TextView description = productDialog.findViewById(R.id.description);
         TextView date = productDialog.findViewById(R.id.jar_date);
 
-        //int i = ((RelativeLayout)(view.getParent())).getId();
         JarClass jar = jarList.get(view.getId());
         title.setText(jar.name);
         description.setText(jar.description);
         date.setText(jar.date);
 
-
-
-
-        //if(jar.size=="small") small_jar.setImageResource(R.drawable.ic_jar_of_jam_small);
-        //else if(jar.size=="medium") medium_jar.setImageResource(R.drawable.ic_jar_of_jam_medium);
-        //else big_jar.setImageResource(R.drawable.ic_jar_of_jam_big);
-
-        //jar_img.setImageBitmap(jar.img);
-        //title.setText(jar.title);
-        //description.setText(jar.description);
-        //date.setText(jar.date);
 
         Button back = (Button) productDialog.findViewById(R.id.product_back);
         Button exchange = (Button) productDialog.findViewById(R.id.product_exchange);
@@ -162,7 +149,7 @@ public class Inventory extends AppCompatActivity
 
 
     public void deleteJar(View view) {
-        linearLayout.removeViewAt((((RelativeLayout)view.getParent()).getId()));
+        linearLayout.removeViewAt((((RelativeLayout) view.getParent()).getId()));
     }
 
     @Override

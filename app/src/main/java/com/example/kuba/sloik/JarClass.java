@@ -16,16 +16,16 @@ public class JarClass implements Serializable {
     public String latitude;
     public String longitude;
 
-    public JarClass(){
+    public JarClass() {
         this.size = "5";
         this.name = "not_working";
         this.description = "neither";
         this.date = "03.26";
-        this.latitude="10";
-        this.longitude="20";
+        this.latitude = "10";
+        this.longitude = "20";
     }
 
-    public JarClass(String jarId, String ownerId, String size, String name, String description, String date, String latitude, String longitude){
+    public JarClass(String jarId, String ownerId, String size, String name, String description, String date, String latitude, String longitude) {
         this.jarId = jarId;
         this.ownerId = ownerId;
         this.size = size;
