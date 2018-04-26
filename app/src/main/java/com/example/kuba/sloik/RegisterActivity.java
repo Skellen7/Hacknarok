@@ -33,9 +33,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 
 public class RegisterActivity extends AppCompatActivity {
 
-//    private static final String[] DUMMY_CREDENTIALS = new String[]{
-//            "send@bajt.com:bajt"
-//    };
+
     private ArrayList<UserClass> userList;
 
     /**
@@ -107,17 +105,15 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                     UserClass user = userSnapshot.getValue(UserClass.class);
-                    Log.v("TEST", user.getEmail());
                     userList.add(user);
                 }
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.v("TEST","wrong");
+                Log.v("TEST", "wrong");
             }
         });
     }
@@ -132,7 +128,6 @@ public class RegisterActivity extends AppCompatActivity {
         mPasswordView.setError(null);
         mPasswordView.setError(null);
 
-
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
@@ -142,9 +137,9 @@ public class RegisterActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check if email is already taken
-        if(!TextUtils.isEmpty(email)) {
-            for(UserClass user : userList) {
-                if(user.getEmail().equals(email)) {
+        if (!TextUtils.isEmpty(email)) {
+            for (UserClass user : userList) {
+                if (user.getEmail().equals(email)) {
                     mEmailView.setError(getString(R.string.error_taken_email));
                     focusView = mEmailView;
                     cancel = true;
@@ -208,7 +203,6 @@ public class RegisterActivity extends AppCompatActivity {
         if (!mayRequestContacts()) {
             return;
         }
-
         //getLoaderManager().initLoader(0, null, (LoaderManager.LoaderCallbacks<Object>) this);
     }
 

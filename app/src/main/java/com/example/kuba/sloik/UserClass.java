@@ -15,7 +15,8 @@ public class UserClass {
     private Integer rating;
     private String photoID;
 
-    public UserClass() {}
+    public UserClass() {
+    }
 
     public UserClass(String username, String email, String password) {
         this.username = username;

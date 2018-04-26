@@ -52,13 +52,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-//    /**
-//     * A dummy authentication store containing known user names and passwords.
-//     * TODO: remove after connecting to a real authentication system.
-//     */
-//    private static final String[] DUMMY_CREDENTIALS = new String[]{
-//            "send@bajt.com:bajt"
-//    };
     private ArrayList<UserClass> userList;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -133,16 +126,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                     UserClass user = userSnapshot.getValue(UserClass.class);
-                    //Log.v("TEST", user.getEmail());
                     userList.add(user);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.v("TEST","wrong");
+                Log.v("TEST", "wrong");
             }
         });
     }
@@ -400,8 +392,4 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
         }
     }
-
-
-
 }
-

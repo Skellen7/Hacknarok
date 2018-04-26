@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity
 
 
     //permisions
-    private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION =1;
+    private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -256,8 +256,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
         userList = new ArrayList<>();
-
-
     }
 
     private UserClass getUser() {
@@ -270,7 +268,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Wrapper.place = PlacePicker.getPlace(data, this);
@@ -279,14 +276,11 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
         }
-        if(requestCode == REQUEST_IMAGE && resultCode == RESULT_OK){
-            //Uri uri = data.getData();
+        if (requestCode == REQUEST_IMAGE && resultCode == RESULT_OK) {
             StorageReference filepath = mStorage.child("Photos").child(globalPhoto.getLastPathSegment());
             filepath.putFile(globalPhoto);
         }
-
     }
-
 
 
     @Override
@@ -311,8 +305,6 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-
-
     }
 
     private void afterDB() {
@@ -407,17 +399,17 @@ public class MainActivity extends AppCompatActivity
         ImageView jarSize;
         final ImageView jarPhoto = productDialog.findViewById(R.id.mainJar);
 
-        for(JarClass jar : jarList){
-            if(jar.getJarId().equals(marker.getTag())){
+        for (JarClass jar : jarList) {
+            if (jar.getJarId().equals(marker.getTag())) {
                 Log.v("TEST", jar.getName());
                 jarTitle.setText(jar.getName());
                 jarDescription.setText(jar.getDescription());
                 jarDate.setText(jar.getDate());
 
-        ImageView big_jar = productDialog.findViewById(R.id.jar_big_icon);
-        ImageView medium_jar = productDialog.findViewById(R.id.jar_medium_icon);
-        ImageView small_jar = productDialog.findViewById(R.id.jar_small_icon);
-              
+                ImageView big_jar = productDialog.findViewById(R.id.jar_big_icon);
+                ImageView medium_jar = productDialog.findViewById(R.id.jar_medium_icon);
+                ImageView small_jar = productDialog.findViewById(R.id.jar_small_icon);
+
                 mStorage.child("Photos").child(jar.getJarId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri_) {
@@ -434,7 +426,7 @@ public class MainActivity extends AppCompatActivity
 
                 Glide.with(this).load(Wrapper.uri).into(jarPhoto);
 
-                switch(jar.getSize()){
+                switch (jar.getSize()) {
                     case "1001":
                         jarSize = productDialog.findViewById(R.id.jar_small_icon);
                         jarSize.setImageResource(R.drawable.ic_jar_of_jam_small);
@@ -489,7 +481,6 @@ public class MainActivity extends AppCompatActivity
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
 
-
         mDatabese.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -498,7 +489,6 @@ public class MainActivity extends AppCompatActivity
                     JarClass jar = jarSnapshot.getValue(JarClass.class);
                     LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
                     mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName())
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.jar_marker)))
                             .setTag(jar.getJarId());
                     jarList.add(jar);
@@ -529,7 +519,7 @@ public class MainActivity extends AppCompatActivity
         Location location = null;
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+            LocationManager mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
             List<String> providers = mLocationManager.getProviders(true);
             Location bestLocation = null;
             for (String provider : providers) {
@@ -551,7 +541,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    void setJarButtonIds(Dialog dialog){
+    void setJarButtonIds(Dialog dialog) {
         dialog.findViewById(R.id.smallJarButton).setId(RB_1);
         dialog.findViewById(R.id.mediumJarButton).setId(RB_2);
         dialog.findViewById(R.id.bigJarButton).setId(RB_3);
@@ -631,11 +621,10 @@ public class MainActivity extends AppCompatActivity
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         String t = image.getName();
-        Log.v("test", t);
-        //writeNewUrl(t,4);
         return image;
     }
-    private boolean cameraExist(){
+
+    private boolean cameraExist() {
         return getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     }
 }
