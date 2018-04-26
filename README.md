@@ -27,7 +27,7 @@ Users collect points for successfull trades and tasty meals.
 
 * **Jakub Cholewa** [@Skellen7](https://github.com/Skellen7)
 * **Bartosz Gaj** [@balipl](https://github.com/balipl)
-* **Jan Ignatowicz**
+* **Jan Ignatowicz** [@Ignatowicz](https://github.com/Ignatowicz)
 * **Jan Rodzoń**
 
 ## Acknowledgments
