@@ -545,17 +545,10 @@ public class MainActivity extends AppCompatActivity
             location = bestLocation;
         }
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location == null ? 50.0262494 : location.getLatitude(),
-                location == null ? 19.951888 : location.getLongitude()), 13));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(location == null ? 50.0646501 : location.getLatitude(),
+                        location == null ? 19.9449799 : location.getLongitude()), 15));
 
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(location == null ? 50.0262494 : location.getLatitude(),
-                        location == null ? 19.951888 : location.getLongitude()))      // Sets the center of the map to location user
-                .zoom(17)                   // Sets the zoom
-                .bearing(0)                // Sets the orientation of the camera to north
-                .tilt(0)                   // Sets the tilt of the camera to 0 degrees
-                .build();                   // Creates a CameraPosition from the builder
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     void setJarButtonIds(Dialog dialog){
