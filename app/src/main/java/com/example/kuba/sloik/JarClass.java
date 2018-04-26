@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class JarClass implements Serializable {
+    private String jarId;
     private String ownerId;
     public String size;
     public String name;
@@ -24,7 +25,8 @@ public class JarClass implements Serializable {
         this.longitude="20";
     }
 
-    public JarClass(String ownerId, String size, String name, String description, String date, String latitude, String longitude){
+    public JarClass(String jarId, String ownerId, String size, String name, String description, String date, String latitude, String longitude){
+        this.jarId = jarId;
         this.ownerId = ownerId;
         this.size = size;
         this.name = name;
@@ -80,5 +82,21 @@ public class JarClass implements Serializable {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getJarId() {
+        return jarId;
+    }
+
+    public void setJarId(String jarId) {
+        this.jarId = jarId;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 }

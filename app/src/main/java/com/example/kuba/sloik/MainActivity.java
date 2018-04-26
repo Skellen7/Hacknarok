@@ -2,6 +2,7 @@ package com.example.kuba.sloik;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -38,6 +40,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -51,6 +54,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -97,8 +103,7 @@ public class MainActivity extends AppCompatActivity
 
 
     final Context context = this;
-    private int jarId = 0;
-    private int session_id = 1;
+    private String session_id = "23";
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -230,9 +235,8 @@ public class MainActivity extends AppCompatActivity
 
                         // Creating new user node, which returns the unique key value
                         // new user node would be /users/$userid/
-                        String jarId = mDatabese.push().getKey();
 
-                        JarClass jar = new JarClass(String.valueOf(jarId), size, name, description, date, latitude, longitude);
+                        JarClass jar = new JarClass(String.valueOf(jarId), session_id, size, name, description, date, latitude, longitude);
 
                         mDatabese.child(jarId).setValue(jar);
 
@@ -271,7 +275,7 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 Wrapper.place = PlacePicker.getPlace(data, this);
                 //unnecessary toast giving some information
-                String toastMsg = String.format("Place: %s", Wrapper.place.getName());
+                String toastMsg = String.format("Lokalizacja: %s", Wrapper.place.getName());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
         }
@@ -397,23 +401,56 @@ public class MainActivity extends AppCompatActivity
         productDialog.setContentView(R.layout.product_info);
         productDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        TextView jarTitle = productDialog.findViewById(R.id.jarTitle);
+        TextView jarDescription = productDialog.findViewById(R.id.description);
+        TextView jarDate = productDialog.findViewById(R.id.jar_date);
+        ImageView jarSize;
+        final ImageView jarPhoto = productDialog.findViewById(R.id.mainJar);
+
+        for(JarClass jar : jarList){
+            if(jar.getJarId().equals(marker.getTag())){
+                Log.v("TEST", jar.getName());
+                jarTitle.setText(jar.getName());
+                jarDescription.setText(jar.getDescription());
+                jarDate.setText(jar.getDate());
+
         ImageView big_jar = productDialog.findViewById(R.id.jar_big_icon);
         ImageView medium_jar = productDialog.findViewById(R.id.jar_medium_icon);
         ImageView small_jar = productDialog.findViewById(R.id.jar_small_icon);
+              
+                mStorage.child("Photos").child(jar.getJarId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri_) {
+                        Log.v("URI", uri_.toString());
+                        Wrapper.uri = uri_;
+                        // Got the download URL for 'users/me/profile.png'
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
 
-        ImageView jar_img = productDialog.findViewById(R.id.mainJar);
-        TextView title = productDialog.findViewById(R.id.jarTitle);
-        TextView description = productDialog.findViewById(R.id.description);
-        TextView date = productDialog.findViewById(R.id.jar_date);
+                Glide.with(this).load(Wrapper.uri).into(jarPhoto);
 
-        //if(jar.size=="small") small_jar.setImageResource(R.drawable.ic_jar_of_jam_small);
-        //else if(jar.size=="medium") medium_jar.setImageResource(R.drawable.ic_jar_of_jam_medium);
-        //else big_jar.setImageResource(R.drawable.ic_jar_of_jam_big);
-
-        //jar_img.setImageBitmap(jar.img);
-        //title.setText(jar.title);
-        //description.setText(jar.description);
-        //date.setText(jar.date);
+                switch(jar.getSize()){
+                    case "1001":
+                        jarSize = productDialog.findViewById(R.id.jar_small_icon);
+                        jarSize.setImageResource(R.drawable.ic_jar_of_jam_small);
+                        break;
+                    case "1002":
+                        jarSize = productDialog.findViewById(R.id.jar_medium_icon);
+                        jarSize.setImageResource(R.drawable.ic_jar_of_jam_medium);
+                        break;
+                    case "1003":
+                        jarSize = productDialog.findViewById(R.id.jar_big_icon);
+                        jarSize.setImageResource(R.drawable.ic_jar_of_jam_big);
+                        break;
+                }
+                break;
+            }
+        }
 
         Button back = (Button) productDialog.findViewById(R.id.product_back);
         Button exchange = (Button) productDialog.findViewById(R.id.product_exchange);
@@ -461,7 +498,9 @@ public class MainActivity extends AppCompatActivity
                     JarClass jar = jarSnapshot.getValue(JarClass.class);
                     LatLng coords = new LatLng(Double.valueOf(jar.getLatitude()), Double.valueOf(jar.getLongitude()));
                     mMap.addMarker(new MarkerOptions().position(coords).title(jar.getName())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.jar_marker)))
+                            .setTag(jar.getJarId());
                     jarList.add(jar);
                 }
             }
@@ -477,7 +516,6 @@ public class MainActivity extends AppCompatActivity
                 //Get Post object and use the values to update the UI
                 JarClass jar = dataSnapshot.getValue(JarClass.class);
                 LatLng jarPosition = new LatLng(Integer.valueOf(jar.latitude), 15);
-
             }
 
             @Override
